@@ -4,291 +4,466 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Vacation Tracker</title>
+    
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏖️</text></svg>">
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0');
 
-        :root { --p: #25457B; --ph: #1b3663; --acc: #00B8FF; --slate: #607690; --w: #FFFFFF; --err: #FE4A3F; --succ: #13AA09; --sh: 0 2px 6px rgba(0,0,0,0.05); --rad: 12px; }
+        :root {
+          --color-primary: #25457B;
+          --color-primary-hover: #1b3663;
+          --color-accent: #00B8FF;
+          --color-slate: #607690;
+          --color-white: #FFFFFF;
+          --color-error: #FE4A3F;
+          --color-success: #13AA09;
+          --box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+          --radius-md: 12px;
+          --radius-lg: 16px;
+        }
+
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'IBM Plex Sans', sans-serif; font-size: 16px; background: #f5f7fa; color: var(--p); }
-        input, button, select { font-family: inherit; }
+        body { font-family: 'IBM Plex Sans', sans-serif; font-size: 16px; background: #f5f7fa; color: var(--color-primary); -webkit-font-smoothing: antialiased; }
+        input, button, textarea, select { font-family: inherit; }
         .hidden { display: none !important; }
 
         /* Login */
         .login-page { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 1.5rem; }
-        .login-box { width: 100%; max-width: 380px; padding: 2.5rem 2rem; background: var(--w); border-radius: 16px; box-shadow: var(--sh); text-align: center; }
-        .app-title { font-size: 1.8rem; margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: center; gap: 10px; color: var(--p); }
-        
-        /* Dashboard */
-        .dashboard { padding: 2rem; max-width: 1100px; margin: auto; }
-        .sec-title { font-size: 1.15rem; font-weight: 600; padding-bottom: 0.75rem; margin-bottom: 1.25rem; border-bottom: 1px solid #e1e5eb; display: flex; justify-content: space-between; align-items: center; }
-        .sec-title div { display: flex; align-items: center; gap: 8px; }
-        .sec-title .material-symbols-rounded { color: var(--acc); font-size: 1.4rem; }
+        .login-box { width: 100%; max-width: 380px; padding: 2.5rem 2rem; background: var(--color-white); border-radius: var(--radius-lg); box-shadow: var(--box-shadow); text-align: center; }
+        .app-title { font-size: 1.75rem; margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: center; gap: 10px; color: var(--color-primary); }
+        .subtitle { font-size: 0.95rem; color: var(--color-slate); margin-bottom: 2rem; }
 
-        /* Inputs & Buttons */
-        .input-f { display: flex; align-items: center; background: var(--w); border: 1px solid #cbd3dc; border-radius: var(--rad); padding: 0.75rem 1rem; margin-bottom: 1rem; }
-        .input-f input, .input-f select { flex: 1; border: none; background: transparent; font-size: 1rem; outline: none; width: 100%; }
-        .btn { padding: 0.8rem; border-radius: var(--rad); border: none; font-weight: 500; cursor: pointer; width: 100%; display: flex; justify-content: center; align-items: center; gap: 5px; }
-        .btn-p { background: var(--p); color: white; }
-        .btn-p:hover { background: var(--ph); }
-        .btn-s { background: transparent; border: 1px solid #cbd3dc; color: var(--slate); }
-        .btn-err { background: var(--err); color: white; width: auto; padding: 0.5rem 1rem; font-size: 0.85rem; }
+        /* Forms */
+        .input-group { margin-bottom: 1.25rem; text-align: left; }
+        .input-group label { display: block; margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: 500; color: var(--color-primary); }
+        .input-field { display: flex; align-items: center; background: var(--color-white); border: 1px solid #cbd3dc; border-radius: var(--radius-md); padding: 0.75rem 1rem; }
+        .input-field:focus-within { border-color: var(--color-accent); }
+        .input-field input, .input-field select { flex: 1; border: none; background: transparent; font-size: 1rem; outline: none; color: var(--color-primary); width: 100%; }
+        .input-field .material-symbols-rounded { font-size: 1.25rem; margin-right: 0.75rem; color: var(--color-slate); }
+
+        /* Buttons */
+        .btn-primary, .btn-secondary, .btn-danger { padding: 0.8rem 1.2rem; border: none; border-radius: var(--radius-md); font-size: 0.95rem; font-weight: 500; cursor: pointer; width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; transition: background-color 0.2s; }
+        .btn-primary { background-color: var(--color-primary); color: white; }
+        .btn-primary:hover { background-color: var(--color-primary-hover); }
+        .btn-secondary { background-color: transparent; border: 1px solid #cbd3dc; color: var(--color-slate); }
+        .btn-secondary:hover { background-color: #f1f4f7; color: var(--color-primary); }
+        .btn-danger { background-color: var(--color-error); color: white; width: auto; padding: 0.5rem 1rem; font-size: 0.85rem;}
         .btn-sm { padding: 0.5rem 1rem; font-size: 0.85rem; width: auto; }
 
-        /* Cards */
-        .cards { display: flex; gap: 1.5rem; margin-bottom: 2.5rem; }
-        .card { flex: 1; background: var(--w); padding: 1.5rem; border-radius: 16px; box-shadow: var(--sh); display: flex; align-items: center; justify-content: space-between; }
-        .c-icon { font-size: 2.5rem; color: var(--acc); background: #f0f7ff; padding: 0.75rem; border-radius: 50%; display: flex; }
-        .c-content { text-align: right; }
-        .c-val { font-family: 'IBM Plex Mono'; font-size: 2rem; font-weight: 600; }
+        /* Dashboard */
+        .dashboard { padding: 2rem; max-width: 1100px; margin: auto; }
+        .section-title { font-size: 1.15rem; font-weight: 600; padding-bottom: 0.75rem; margin-bottom: 1.25rem; border-bottom: 1px solid #e1e5eb; color: var(--color-primary); display: flex; justify-content: space-between; align-items: center; }
+        .section-title .header-left { display: flex; align-items: center; gap: 8px; }
+        .section-title .material-symbols-rounded { color: var(--color-accent); font-size: 1.4rem; }
 
-        /* List Styling */
-        .list-card { background: var(--w); border-radius: var(--rad); padding: 1rem; margin-bottom: 0.75rem; box-shadow: var(--sh); border: 1px solid #e1e5eb; }
-        .tbl-wrap { background: var(--w); border-radius: 16px; box-shadow: var(--sh); overflow: hidden; margin-bottom: 1rem; border: 1px solid #f0f0f0; width: 100%; }
+        /* Cards */
+        .dashboard-cards { display: flex; gap: 1.5rem; margin-bottom: 2.5rem; }
+        .card { flex: 1; background: var(--color-white); padding: 1.5rem; border-radius: var(--radius-lg); box-shadow: var(--box-shadow); display: flex; flex-direction: row; align-items: center; justify-content: space-between; }
+        .card-icon { font-size: 2.5rem; color: var(--color-accent); display: flex; align-items: center; justify-content: center; background: #f0f7ff; padding: 0.75rem; border-radius: 50%; }
+        .card-content { display: flex; flex-direction: column; align-items: flex-end; text-align: right; }
+        .card-title { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-slate); margin-bottom: 0.25rem; font-weight: 600; }
+        .card-value { font-family: 'IBM Plex Mono', monospace; font-size: 2rem; font-weight: 600; color: var(--color-primary); line-height: 1; }
+
+        /* List/Table Cards (Global Style for consistency) */
+        .list-card {
+            background: var(--color-white);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            box-shadow: var(--box-shadow);
+            border: 1px solid #e1e5eb;
+            width: 100%;
+        }
+
+        /* Tables & Wrappers */
+        .table-wrapper { background: var(--color-white); border-radius: var(--radius-lg); box-shadow: var(--box-shadow); overflow: hidden; margin-bottom: 2.5rem; border: 1px solid #f0f0f0; width: 100%; }
+        .form-container { padding: 2rem; }
         table { width: 100%; border-collapse: collapse; min-width: 600px; }
-        th { background: #f8f9fa; color: var(--slate); padding: 1rem; font-size: 0.8rem; text-transform: uppercase; text-align: left; }
-        td { padding: 1rem; font-size: 0.95rem; border-bottom: 1px solid #f0f0f0; }
-        
-        /* Pagination */
-        .pag-ctrl { display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 2.5rem; }
-        .pag-btn { background: white; border: 1px solid #ddd; padding: 5px 10px; border-radius: 6px; cursor: pointer; }
-        .pag-btn:disabled { opacity: 0.5; cursor: default; }
+        th { background: #f8f9fa; color: var(--color-slate); padding: 1rem 1.5rem; font-size: 0.8rem; text-transform: uppercase; font-weight: 600; text-align: left; border-bottom: 1px solid #e1e5eb; }
+        td { padding: 1rem 1.5rem; font-size: 0.95rem; border-bottom: 1px solid #f0f0f0; color: var(--color-primary); }
+        tr:last-child td { border-bottom: none; }
+
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .badge.Approved { background: #e6f6e5; color: var(--color-success); }
+        .badge.Rejected { background: #ffebeb; color: var(--color-error); }
+        .badge.Pending { background: #e3f2fd; color: var(--color-primary); }
 
         /* Navbar */
-        .nav { background: var(--p); padding: 0.85rem 2rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .nav-brand { font-size: 1.1rem; font-weight: 600; color: white; display: flex; align-items: center; gap: 8px; }
-        .user-det { text-align: right; color: white; line-height: 1.2; }
-        .u-role { font-size: 0.75rem; opacity: 0.8; }
-        .nav-btn { background: rgba(255,255,255,0.1); border: none; color: white; width: 36px; height: 36px; border-radius: 8px; cursor: pointer; display: flex; justify-content: center; align-items: center; }
-
+        .navbar { background-color: var(--color-primary); padding: 0.85rem 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
+        .navbar-brand { font-size: 1.1rem; font-weight: 600; color: var(--color-white); display: flex; align-items: center; gap: 8px; }
+        .navbar-brand .material-symbols-rounded { font-size: 1.5rem; }
+        .user-menu { display: flex; align-items: center; gap: 1rem; }
+        .user-details { text-align: right; line-height: 1.2; color: white; }
+        .user-name { font-size: 0.9rem; font-weight: 600; display: block; }
+        .user-role { font-size: 0.75rem; opacity: 0.8; display: block; }
+        .nav-btn { background: rgba(255,255,255,0.1); border: none; color: white; width: 36px; height: 36px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        
         /* Modals */
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1100; display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); padding: 1rem; }
         .overlay.active { display: flex; }
-        .modal { background: var(--w); width: 100%; max-width: 500px; padding: 2rem; border-radius: 16px; max-height: 90vh; overflow-y: auto; }
-        .mod-head { display: flex; justify-content: space-between; margin-bottom: 1.5rem; align-items: center; font-size: 1.2rem; font-weight: 600; }
+        .modal { background: var(--color-white); width: 100%; max-width: 480px; padding: 2rem; border-radius: var(--radius-lg); box-shadow: 0 10px 40px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .modal-header h3 { font-size: 1.2rem; color: var(--color-primary); margin: 0; display: flex; align-items: center; gap: 8px; }
+        .close-icon { background: none; border: none; color: var(--color-slate); cursor: pointer; font-size: 1.5rem; padding: 0; display: flex; }
         
-        .toast { position: fixed; bottom: 2rem; left: 50%; transform: translate(-50%, 20px); background: #333; color: white; padding: 0.8rem 1.5rem; border-radius: 50px; z-index: 3000; opacity: 0; transition: 0.3s; pointer-events: none; display: flex; gap: 8px; }
+        .toast { position: fixed; bottom: 2rem; left: 50%; transform: translate(-50%, 20px); background: #333; color: white; padding: 0.75rem 1.5rem; border-radius: 50px; font-size: 0.9rem; z-index: 3000; opacity: 0; transition: all 0.3s ease; display: flex; align-items: center; gap: 8px; pointer-events: none; }
         .toast.show { transform: translate(-50%, 0); opacity: 1; }
-        .toast.err { background: var(--err); }
-        .loader { position: fixed; inset: 0; background: rgba(255,255,255,0.8); z-index: 2000; display: none; align-items: center; justify-content: center; }
-        .spin { width: 40px; height: 40px; border: 4px solid #eee; border-top: 4px solid var(--acc); border-radius: 50%; animation: s 0.8s linear infinite; }
-        @keyframes s { 100% { transform: rotate(360deg); } }
+        .toast.success { background-color: var(--color-success); }
+        .toast.error { background-color: var(--color-error); }
+        .loader-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.8); z-index: 2000; display: none; align-items: center; justify-content: center; }
+        .loader { width: 40px; height: 40px; border: 4px solid #e1e5eb; border-top: 4px solid var(--color-accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
 
-        /* Responsive */
-        .m-view { display: none; }
-        .d-view { display: table-row; }
-        .mob-name-show { display: none; font-size: 0.8rem; opacity: 0.9; font-weight: 400; display: block; margin-top: 2px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .manage-box { background: #f8f9fa; padding: 1rem; border-radius: var(--radius-md); margin-top: 1rem; border: 1px solid #e1e5eb; }
+        .manage-box h4 { font-size: 0.85rem; color: var(--color-primary); margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; }
 
+        /* Common row content styles */
+        .m-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid #f0f0f0; }
+        .m-title { font-weight: 600; color: var(--color-primary); font-size: 0.95rem; }
+        .m-sub { font-size: 0.85rem; color: var(--color-slate); display: flex; align-items: center; gap: 4px; }
+
+        /* --- MOBILE STYLES --- */
+        .mobile-row { display: none; } /* Hidden on desktop */
+        
         @media (max-width: 768px) {
             .dashboard { padding: 1.5rem 1rem; }
-            .nav { padding: 0.75rem 1rem; }
-            .user-det { display: none; } /* Hide Right Side Name */
-            .nav-brand div { display: flex; flex-direction: column; line-height: 1; }
-
-            .cards { flex-direction: row; flex-wrap: wrap; gap: 1rem; }
-            .card { flex-basis: 100%; flex-direction: column; text-align: center; }
-            .c-content { align-items: center; }
-
-            .d-view { display: none; } /* Hide Desktop Rows */
-            .m-view { display: block; } /* Show Mobile Cards */
+            .navbar { padding: 0.75rem 1rem; }
+            .user-details { display: none; }
+            .section-title { font-size: 1.05rem; margin-bottom: 1rem; }
+            .btn-primary, .btn-secondary { padding: 0.75rem; font-size: 0.9rem; }
             
-            table { display: block; }
-            thead { display: none; }
+            /* Card Layout: Column on Mobile */
+            .dashboard-cards { flex-direction: row; flex-wrap: wrap; gap: 1rem; }
+            .card { flex-basis: 100%; flex-direction: column; align-items: center; text-align: center; padding: 1.5rem 1rem; }
+            .card-icon { margin-bottom: 1rem; font-size: 2rem; padding: 0.6rem; }
+            .card-content { align-items: center; text-align: center; }
+            .card-title { font-size: 0.8rem; }
+            .card-value { font-size: 1.8rem; }
+
+            /* Table Layout for Mobile */
+            .table-wrapper.has-table { background: transparent; box-shadow: none; border: none; }
+            table { min-width: 100%; display: block; }
+            thead { display: none; } /* Hide Headers */
             tbody { display: block; width: 100%; }
-            tr.m-row { display: block; margin-bottom: 1rem; }
-            tr.m-row td { display: block; padding: 0; border: none; }
-            .tbl-wrap.has-table { background: transparent; box-shadow: none; border: none; }
+            
+            .desktop-row { display: none; } /* Hide Desktop Rows */
+            .mobile-row { display: block; width: 100%; margin-bottom: 1rem; }
+            .mobile-row td { display: block; padding: 0; border: none; background: transparent; }
+            
+            .form-container { padding: 1.25rem; }
         }
     </style>
 </head>
 <body>
 
-<div id="loader" class="loader"><div class="spin"></div></div>
-<div id="toast" class="toast"></div>
+    <div id="loader" class="loader-overlay"><div class="loader"></div></div>
+    <div id="toast" class="toast"></div>
 
-<nav class="nav hidden" id="navbar">
-    <div class="nav-brand">
-        <span class="material-symbols-rounded" style="font-size: 1.8rem;">beach_access</span>
-        <div>
-            <span>Vacation Tracker</span>
-            <span id="navMobName" class="mob-name-show"></span>
+    <nav class="navbar hidden" id="navbar">
+        <div class="navbar-brand"><span class="material-symbols-rounded">beach_access</span> Vacation Tracker</div>
+        <div class="user-menu">
+            <div class="user-details"><span class="user-name" id="userDisplay">User</span><span class="user-role" id="userRoleDisplay">Member</span></div>
+            <button class="nav-btn" onclick="openPassModal()"><span class="material-symbols-rounded">lock</span></button>
+            <button class="nav-btn" onclick="logout()"><span class="material-symbols-rounded">logout</span></button>
+        </div>
+    </nav>
+
+    <div id="view-login" class="login-page">
+        <div class="login-box">
+            <h2 class="app-title"><span class="material-symbols-rounded" style="font-size:2rem;">beach_access</span></h2>
+            <h2 class="app-title">Vacation Tracker</h2>
+            <p class="subtitle">Sign in to manage your leave</p>
+            <div class="input-group"><label>Email</label><div class="input-field"><span class="material-symbols-rounded">mail</span><input type="email" id="loginEmail" placeholder="name@company.com"></div></div>
+            <div class="input-group"><label>Password</label><div class="input-field"><span class="material-symbols-rounded">key</span><input type="password" id="loginPass" placeholder="Password"></div></div>
+            <button class="btn-primary" onclick="login()">Sign In</button>
+            <div id="loginError" style="color:var(--color-error); margin-top:1rem; font-size:0.9rem;"></div>
         </div>
     </div>
-    <div style="display:flex; gap:10px; align-items:center;">
-        <div class="user-det">
-            <span id="uName" style="display:block; font-weight:600;"></span>
-            <span id="uRole" class="u-role"></span>
-        </div>
-        <button class="nav-btn" onclick="openPass()"><span class="material-symbols-rounded">lock_reset</span></button>
-        <button class="nav-btn" onclick="logout()"><span class="material-symbols-rounded">logout</span></button>
-    </div>
-</nav>
 
-<div id="view-login" class="login-page">
-    <div class="login-box">
-        <h2 class="app-title"><span class="material-symbols-rounded" style="font-size:2rem;">beach_access</span> Vacation Tracker</h2>
-        <p class="subtitle">Sign in to manage your leave</p>
-        <div class="input-f"><span class="material-symbols-rounded">mail</span><input id="lEmail" placeholder="Email"></div>
-        <div class="input-f"><span class="material-symbols-rounded">key</span><input type="password" id="lPass" placeholder="Password"></div>
-        <button class="btn btn-p" onclick="login()">Sign In</button>
-        <div id="lErr" style="color:var(--err); margin-top:10px;"></div>
-    </div>
-</div>
-
-<div id="view-dashboard" class="dashboard hidden">
-    
-    <div id="secAdmin" class="hidden">
-        <div class="sec-title"><div><span class="material-symbols-rounded">supervisor_account</span> User Management</div> <button id="btnAdd" class="btn btn-p btn-sm hidden" onclick="openCreate()">+ Add User</button></div>
-        <div class="tbl-wrap has-table"><table id="tblUsers"><thead><tr><th>Name</th><th>Email</th><th>Role</th><th align="right">Action</th></tr></thead><tbody></tbody></table></div>
-        <div class="pag-ctrl"><button class="pag-btn" onclick="pag('users',-1)">Prev</button><button class="pag-btn" onclick="pag('users',1)">Next</button></div>
-    </div>
-
-    <div class="sec-title"><div><span class="material-symbols-rounded">account_balance_wallet</span> My Balance</div></div>
-    <div class="cards">
-        <div class="card"><div class="c-icon"><span class="material-symbols-rounded">calendar_month</span></div><div class="c-content"><div style="color:var(--slate); font-size:0.85rem; font-weight:600;">ANNUAL REMAINING</div><div class="c-val" id="bAnn">--</div></div></div>
-        <div class="card"><div class="c-icon"><span class="material-symbols-rounded">event_available</span></div><div class="c-content"><div style="color:var(--slate); font-size:0.85rem; font-weight:600;">IN-LIEU REMAINING</div><div class="c-val" id="bLieu">--</div></div></div>
-    </div>
-
-    <div id="secPending" class="hidden">
-        <div class="sec-title"><div><span class="material-symbols-rounded">notifications_active</span> Pending Requests</div></div>
-        <div id="listPending"></div>
-        <div class="pag-ctrl"><button class="pag-btn" onclick="pag('pending',-1)">Prev</button><button class="pag-btn" onclick="pag('pending',1)">Next</button></div>
-    </div>
-
-    <div class="sec-title"><div><span class="material-symbols-rounded">add_circle</span> New Request</div></div>
-    <div class="tbl-wrap" style="padding:2rem;">
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-            <div class="input-f"><input type="date" id="rStart"></div>
-            <div class="input-f"><input type="date" id="rEnd"></div>
-        </div>
-        <div class="input-f"><select id="rType"><option value="Annual">Annual Leave</option><option value="InLieu">In-Lieu</option></select></div>
-        <button class="btn btn-p" style="width:auto; padding-left:2rem; padding-right:2rem;" onclick="subReq()">Submit Request</button>
-    </div>
-
-    <div class="sec-title"><div><span class="material-symbols-rounded">history</span> My History</div></div>
-    <div class="tbl-wrap has-table"><table id="tblHist"><thead><tr><th>Type</th><th>Dates</th><th>Days</th><th>Status</th></tr></thead><tbody></tbody></table></div>
-    <div class="pag-ctrl"><button class="pag-btn" onclick="pag('hist',-1)">Prev</button><button class="pag-btn" onclick="pag('hist',1)">Next</button></div>
-</div>
-
-<div id="modMan" class="overlay"><div class="modal">
-    <div class="mod-head"><span><span class="material-symbols-rounded">manage_accounts</span> Manage User</span><span class="material-symbols-rounded" style="cursor:pointer;" onclick="closeMod('modMan')">close</span></div>
-    <input type="hidden" id="mOrig">
-    <div class="input-f"><input id="mName"></div>
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"><div class="input-f"><input id="mEmail"></div><div class="input-f"><select id="mCtry"></select></div></div>
-    <div class="input-f"><input id="mMgr" placeholder="Manager Email"></div>
-    <div id="admFields" class="hidden"><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"><div class="input-f"><select id="mRole"><option>Member</option><option>Lead</option><option>Manager</option><option>Admin</option></select></div><div class="input-f"><input id="mPass" placeholder="Reset Pass"></div></div></div>
-    <button class="btn btn-p" onclick="saveUser()">Save Changes</button>
-    
-    <div style="background:#f8f9fa; padding:1rem; border-radius:12px; margin-top:1rem; border:1px solid #ddd;">
-        <h4 style="margin-bottom:0.5rem; color:var(--p);">ADJUST ANNUAL</h4>
-        <div style="display:grid; grid-template-columns:1fr 2fr; gap:10px;"><div class="input-f"><input type="number" id="adjAnnVal" placeholder="+/-"></div><div class="input-f"><input id="adjAnnDesc" placeholder="Reason"></div></div>
-        <button class="btn btn-p btn-sm" onclick="adjBal('Annual')">Update</button>
-    </div>
-
-    <div style="background:#f8f9fa; padding:1rem; border-radius:12px; margin-top:1rem; border:1px solid #ddd;">
-        <h4 style="margin-bottom:0.5rem; color:var(--p);">ADD IN-LIEU DAY</h4>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"><div class="input-f"><input type="date" id="adjLieuDate"></div><div style="background:white; border:1px solid #ddd; border-radius:12px; display:flex; align-items:center; padding:0 1rem; font-weight:600;">1 Day</div></div>
-        <div class="input-f" style="margin-top:10px"><input id="adjLieuDesc" placeholder="Description"></div>
-        <button class="btn btn-p btn-sm" onclick="adjBal('InLieu')">Add In-Lieu</button>
+    <div id="view-dashboard" class="dashboard hidden">
         
-        <h4 style="margin:1rem 0 0.5rem 0; color:var(--p);">IN-LIEU HISTORY</h4>
-        <div id="lieuLogList" style="max-height:150px; overflow-y:auto; font-size:0.85rem;"></div>
-    </div>
-</div></div>
-
-<div id="modPass" class="overlay"><div class="modal"><div class="mod-head"><span><span class="material-symbols-rounded">lock_reset</span> Change Password</span><span class="material-symbols-rounded" style="cursor:pointer;" onclick="closeMod('modPass')">close</span></div><div class="input-f"><input type="password" id="op" placeholder="Current"></div><div class="input-f"><input type="password" id="np" placeholder="New"></div><button class="btn btn-p" onclick="updPass()">Update</button></div></div>
-
-<div id="modCreate" class="overlay"><div class="modal"><div class="mod-head"><span><span class="material-symbols-rounded">person_add</span> Create User</span><span class="material-symbols-rounded" style="cursor:pointer;" onclick="closeMod('modCreate')">close</span></div><div class="input-f"><input id="cEmail" placeholder="Email"></div><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"><div class="input-f"><input id="cPass" placeholder="Pass"></div><div class="input-f"><input id="cName" placeholder="Name"></div></div><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"><div class="input-f"><select id="cRole"><option>Member</option><option>Lead</option><option>Manager</option></select></div><div class="input-f"><select id="cCtry"></select></div></div><div class="input-f"><input id="cMgr" placeholder="Manager Email"></div><button class="btn btn-p" onclick="crtUser()">Create</button></div></div>
-
-<script>
-const API = 'https://script.google.com/macros/s/AKfycbwrTfZeY-8rbdq5BYghgrV2fLMO59mBmhTpJuw5zHHsrfL98XgzNjQFVb-oIT0wWaFW/exec';
-const COUNTRIES=[{c:'ID',f:'🇮🇩'},{c:'PH',f:'🇵🇭'},{c:'SG',f:'🇸🇬'},{c:'VN',f:'🇻🇳'},{c:'MY',f:'🇲🇾'},{c:'TH',f:'🇹🇭'},{c:'IN',f:'🇮🇳'},{c:'US',f:'🇺🇸'},{c:'AU',f:'🇦🇺'}];
-let user=null, dData={users:[],hist:[],pending:[]}, pgs={users:1,hist:1,pending:1};
-const $ = i => document.getElementById(i);
-const load = s => $('loader').style.display=s?'flex':'none';
-const closeMod = i => $(i).classList.remove('active');
-const toast = (m,t='info') => { let x=$('toast'); x.className=`toast show ${t=='error'?'err':''}`; x.innerHTML=`<span class="material-symbols-rounded">${t=='error'?'error':'check_circle'}</span> ${m}`; setTimeout(()=>x.className='toast',3000); };
-const popCtry = i => { let s=$(i); s.innerHTML=''; COUNTRIES.forEach(z=>{let o=document.createElement('option');o.value=z.c;o.innerText=z.f+' '+z.c;s.appendChild(o)}); };
-
-window.onload = () => { let u=localStorage.getItem('vt_u'); if(u){ try{user=JSON.parse(u); ui();}catch(e){localStorage.removeItem('vt_u');} } };
-
-async function req(d) { load(1); try{ let r=await fetch(API,{method:'POST',body:JSON.stringify(d)}); let j=await r.json(); load(0); return j; }catch(e){ load(0); toast('Error','error'); return {status:'error'}; } }
-
-async function login() { let r=await req({action:'login',email:$('lEmail').value,password:$('lPass').value}); if(r.status=='success'){ user=r.user; localStorage.setItem('vt_u',JSON.stringify(user)); ui(); }else $('lErr').innerText=r.message; }
-function logout() { localStorage.removeItem('vt_u'); location.reload(); }
-function ui() { $('uName').innerText=user.name; $('navMobName').innerText=user.name; $('uRole').innerText=user.role; $('view-login').classList.add('hidden'); $('view-dashboard').classList.remove('hidden'); $('navbar').classList.remove('hidden'); init(); }
-function openPass() { $('modPass').classList.add('active'); }
-async function updPass() { let r=await req({action:'changeOwnPassword',email:user.email,oldPassword:$('op').value,newPassword:$('np').value}); if(r.status=='success'){toast('Done'); closeMod('modPass');}else toast(r.message,'error'); }
-
-async function init() {
-    let r = await req({action:'getDashboard',email:user.email,role:user.role});
-    $('bAnn').innerText = r.balance.annual - r.balance.annualUsed;
-    $('bLieu').innerText = r.balance.inLieu - r.balance.inLieuUsed;
-    dData.hist = r.myRequests; dData.pending = r.teamRequests;
-    rend('hist');
-    if(['Manager','Lead','Admin'].includes(user.role)) {
-        $('secPending').classList.remove('hidden'); rend('pending');
-        $('secAdmin').classList.remove('hidden'); if(user.role=='Admin')$('btnAdd').classList.remove('hidden');
-        loadUsers();
-    }
-}
-
-async function loadUsers() { let r = await req({action:'getUsersList',requestorEmail:user.email,requestorRole:user.role}); dData.users=r.users; rend('users'); }
-
-function pag(t,d) { let tot=Math.ceil(dData[t].length/3); let n=pgs[t]+d; if(n>0 && n<=tot){ pgs[t]=n; rend(t); } }
-
-function rend(t) {
-    let d=dData[t], p=pgs[t], s=(p-1)*3, sl=d.slice(s,s+3);
-    if(t=='users') {
-        $('tblUsers').querySelector('tbody').innerHTML = sl.map(u => `
-            <tr class="d-view"><td>${u.name}</td><td>${u.email}</td><td>${u.role}</td><td align="right"><button class="btn btn-s btn-sm" onclick="man('${u.email}')">Manage</button></td></tr>
-            <tr class="m-view mobile-row"><td><div class="list-card"><div class="m-head"><span class="m-title">${u.name}</span><span>${u.role}</span></div><div style="display:flex;justify-content:space-between;align-items:center;"><span>${u.email}</span><button class="btn btn-s btn-sm" onclick="man('${u.email}')">Manage</button></div></div></td></tr>
-        `).join('');
-    } else if (t=='hist') {
-        $('tblHist').querySelector('tbody').innerHTML = sl.map(r => `
-            <tr class="d-view"><td>${r.type}</td><td>${r.start} - ${r.end}</td><td>${r.days}</td><td><span class="badge ${r.status}">${r.status}</span></td></tr>
-            <tr class="m-view mobile-row"><td><div class="list-card"><div class="m-head"><span class="m-title">${r.type}</span><span class="badge ${r.status}">${r.status}</span></div><div class="m-sub"><span class="material-symbols-rounded" style="font-size:1rem">event</span> ${r.start} - ${r.end} (${r.days} Days)</div></div></td></tr>
-        `).join('');
-    } else if (t=='pending') {
-        $('listPending').innerHTML = sl.map(r => `
-            <div class="list-card" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-                <div><div class="m-title">${r.name}</div><div class="m-sub">${r.type} • ${r.days} Days • ${r.start}</div></div>
-                <div style="display:flex; gap:5px;"><button class="btn btn-p btn-sm" style="background:var(--succ)" onclick="dec('${r.id}','Approved')">Approve</button><button class="btn btn-err btn-sm" onclick="dec('${r.id}','Rejected')">Reject</button></div>
+        <div id="adminPanel" class="hidden" style="margin-bottom: 2rem;">
+            <div class="section-title">
+                <div class="header-left"><span class="material-symbols-rounded">supervisor_account</span> User Management</div>
+                <button id="btnAddUser" class="btn-primary btn-sm hidden" onclick="openCreateUserModal()">+ Add User</button>
             </div>
-        `).join('') || '<div class="list-card" style="text-align:center; color:var(--slate)">No requests</div>';
-    }
-}
-
-async function subReq() { await req({action:'submitRequest',email:user.email,start:$('rStart').value,end:$('rEnd').value,type:$('rType').value}); toast('Submitted'); init(); }
-async function dec(id,d) { await req({action:'approveReject',id,decision:d}); init(); }
-
-async function man(e) {
-    popCtry('mCtry'); let r = await req({action:'getUserDetails',targetEmail:e});
-    let u=r.user; $('mOrig').value=u.email; $('mEmail').value=u.email; $('mName').value=u.name; $('mMgr').value=u.manager; $('mCtry').value=u.country;
-    if(user.role=='Admin'){$('admFields').classList.remove('hidden'); $('mRole').value=u.role; $('mPass').value='';}else $('admFields').classList.add('hidden');
-    $('modMan').classList.add('active'); loadLogs(e);
-}
-async function saveUser() { await req({action:'updateUserDetails',requestorRole:user.role,originalEmail:$('mOrig').value,email:$('mEmail').value,name:$('mName').value,manager:$('mMgr').value,country:$('mCtry').value,role:$('mRole').value,password:$('mPass').value}); toast('Saved'); closeMod('modMan'); loadUsers(); }
-async function adjBal(t) {
-    let amt=(t=='Annual'?$('adjAnnVal').value:1), desc=(t=='Annual'?$('adjAnnDesc').value:$('adjLieuDesc').value), dt=(t=='InLieu'?$('adjLieuDate').value:'');
-    if(!amt||!desc) return toast('Missing info','error');
-    await req({action:'adjustBalance',requestorEmail:user.email,targetEmail:$('mOrig').value,type:t,amount:amt,description:desc,date:dt});
-    toast('Updated'); if(t=='InLieu') loadLogs($('mOrig').value);
-}
-async function loadLogs(e) {
-    let r = await req({action:'getInLieuLogs',targetEmail:e});
-    $('lieuLogList').innerHTML = r.logs.map(l => `
-        <div style="border-bottom:1px solid #eee; padding:5px 0; display:flex; justify-content:space-between;">
-            <div><b>${l.amount} Day</b> <span style="opacity:0.7">${l.desc}</span><br><small>${l.date}</small></div>
-            <button class="btn btn-err btn-sm" style="padding:2px 8px;" onclick="delLieu('${l.uid}','${e}')">X</button>
+            <div class="table-wrapper has-table">
+                <table id="userTable">
+                    <thead><tr><th>Name</th><th>Email</th><th>Country</th><th>Role</th><th style="text-align:right">Action</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
         </div>
-    `).join('') || 'No history';
-}
-async function delLieu(uid,e) { if(confirm('Cancel this entry?')) { await req({action:'deleteInLieu',uid}); loadLogs(e); } }
 
-function openCreate() { popCtry('cCtry'); $('modCreate').classList.add('active'); }
-async function crtUser() { await req({action:'createUser',email:$('cEmail').value,password:$('cPass').value,name:$('cName').value,role:$('cRole').value,manager:$('cMgr').value,country:$('cCtry').value}); toast('Created'); closeMod('modCreate'); loadUsers(); }
-</script>
+        <div class="section-title"><div class="header-left"><span class="material-symbols-rounded">account_balance_wallet</span> My Balance</div></div>
+        <div class="dashboard-cards">
+            <div class="card">
+                <div class="card-icon"><span class="material-symbols-rounded">calendar_month</span></div>
+                <div class="card-content"><div class="card-title">Annual Remaining</div><div class="card-value" id="balAnnual">--</div></div>
+            </div>
+            <div class="card">
+                <div class="card-icon"><span class="material-symbols-rounded">event_available</span></div>
+                <div class="card-content"><div class="card-title">In-Lieu Remaining</div><div class="card-value" id="balInLieu">--</div></div>
+            </div>
+        </div>
+
+        <div id="reviewSection" class="hidden" style="margin-bottom: 2rem;">
+            <div class="section-title"><div class="header-left"><span class="material-symbols-rounded">notifications_active</span> Pending Requests</div></div>
+            <div id="pendingList"></div>
+        </div>
+
+        <div class="section-title"><div class="header-left"><span class="material-symbols-rounded">add_circle</span> New Request</div></div>
+        <div class="table-wrapper">
+            <div class="form-container">
+                <form onsubmit="submitRequest(event)">
+                    <div class="grid-2">
+                        <div class="input-group"><label>Start Date</label><div class="input-field"><input type="date" id="reqStart" required></div></div>
+                        <div class="input-group"><label>End Date</label><div class="input-field"><input type="date" id="reqEnd" required></div></div>
+                    </div>
+                    <div class="input-group"><label>Leave Type</label><div class="input-field"><select id="reqType"><option value="Annual">Annual Leave</option><option value="InLieu">In-Lieu</option></select></div></div>
+                    <button type="submit" class="btn-primary" style="width: auto; min-width: 150px;">Submit Request</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="section-title"><div class="header-left"><span class="material-symbols-rounded">history</span> My History</div></div>
+        <div class="table-wrapper has-table">
+            <table id="historyTable">
+                <thead><tr><th>Type</th><th>Dates</th><th>Days</th><th>Status</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="modalManage" class="overlay">
+        <div class="modal">
+            <div class="modal-header"><h3><span class="material-symbols-rounded">manage_accounts</span> Manage User</h3><button class="close-icon" onclick="closeModal('modalManage')"><span class="material-symbols-rounded">close</span></button></div>
+            <form onsubmit="saveUserDetails(event)">
+                <input type="hidden" id="mOrigEmail">
+                <div class="input-group"><label>Full Name</label><div class="input-field"><input type="text" id="mName" required></div></div>
+                <div class="grid-2">
+                    <div class="input-group"><label>Email</label><div class="input-field"><input type="email" id="mEmail" required></div></div>
+                    <div class="input-group"><label>Country</label><div class="input-field"><select id="mCountry"></select></div></div>
+                </div>
+                <div class="input-group"><label>Manager Email</label><div class="input-field"><input type="email" id="mManager"></div></div>
+                <div id="adminFields" class="hidden">
+                    <div class="grid-2">
+                        <div class="input-group"><label>Role</label><div class="input-field"><select id="mRole"><option>Member</option><option>Lead</option><option>Manager</option><option>Admin</option></select></div></div>
+                        <div class="input-group"><label>Reset Password</label><div class="input-field"><input type="text" id="mPass" placeholder="Optional"></div></div>
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary">Save Changes</button>
+            </form>
+            
+            <div class="manage-box">
+                <h4>Adjust Annual Leave</h4>
+                <div class="grid-2">
+                    <div class="input-field"><input type="number" id="adjAnnAmt" placeholder="+/- Days"></div>
+                    <div class="input-field"><input type="text" id="adjAnnDesc" placeholder="Reason"></div>
+                </div>
+                <button class="btn-primary btn-sm" style="width:100%; margin-top:10px" onclick="adjustBalance('Annual')">Update</button>
+            </div>
+            
+            <div class="manage-box">
+                <h4>Add In-Lieu Day</h4>
+                <div class="grid-2">
+                    <div class="input-field"><input type="date" id="adjLieuDate"></div>
+                    <div style="display:flex; align-items:center; background:white; border:1px solid #cbd3dc; border-radius:12px; padding:0 1rem; color:var(--color-primary); font-weight:600;">
+                        1 Day <input type="hidden" id="adjLieuAmt" value="1">
+                    </div>
+                </div>
+                <div class="input-field" style="margin-top:10px"><input type="text" id="adjLieuDesc" placeholder="Description (Required)"></div>
+                <button class="btn-primary btn-sm" style="width:100%; margin-top:10px" onclick="adjustBalance('InLieu')">Add In-Lieu</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalPass" class="overlay">
+        <div class="modal">
+            <div class="modal-header"><h3><span class="material-symbols-rounded">lock_reset</span> Change Password</h3><button class="close-icon" onclick="closeModal('modalPass')"><span class="material-symbols-rounded">close</span></button></div>
+            <div class="input-group"><label>Current Password</label><div class="input-field"><input type="password" id="oldPass"></div></div>
+            <div class="input-group"><label>New Password</label><div class="input-field"><input type="password" id="newPass"></div></div>
+            <button class="btn-primary" onclick="updateOwnPassword()">Update</button>
+        </div>
+    </div>
+
+    <div id="modalCreate" class="overlay">
+        <div class="modal">
+            <div class="modal-header"><h3><span class="material-symbols-rounded">person_add</span> Create User</h3><button class="close-icon" onclick="closeModal('modalCreate')"><span class="material-symbols-rounded">close</span></button></div>
+            <form onsubmit="createUser(event)">
+                <div class="input-group"><label>Email</label><div class="input-field"><input type="email" id="cEmail" required></div></div>
+                <div class="grid-2">
+                    <div class="input-group"><label>Password</label><div class="input-field"><input type="text" id="cPass" required></div></div>
+                    <div class="input-group"><label>Name</label><div class="input-field"><input type="text" id="cName" required></div></div>
+                </div>
+                <div class="grid-2">
+                    <div class="input-group"><label>Role</label><div class="input-field"><select id="cRole"><option>Member</option><option>Lead</option><option>Manager</option></select></div></div>
+                    <div class="input-group"><label>Country</label><div class="input-field"><select id="cCountry"></select></div></div>
+                </div>
+                <div class="input-group"><label>Manager Email</label><div class="input-field"><input type="email" id="cManager"></div></div>
+                <button type="submit" class="btn-primary">Create User</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'https://script.google.com/macros/s/AKfycbxiUK9mG3mjUYoY85e1K3t1xF3VPLqnUH1vna8Ya2-IKXfa-xMUWqOZmVnhdxqKCsAF/exec';
+        
+        const COUNTRIES = [{code:'ID',flag:'🇮🇩'},{code:'PH',flag:'🇵🇭'},{code:'SG',flag:'🇸🇬'},{code:'VN',flag:'🇻🇳'},{code:'MY',flag:'🇲🇾'},{code:'TH',flag:'🇹🇭'},{code:'IN',flag:'🇮🇳'},{code:'US',flag:'🇺🇸'},{code:'AU',flag:'🇦🇺'}];
+        let currentUser = null;
+        const $ = id => document.getElementById(id);
+        const showLoader = s => $('loader').style.display = s ? 'flex' : 'none';
+        const closeModal = id => $(id).classList.remove('active');
+        const showToast = (msg, type='info') => {
+            const t = $('toast'); t.className = `toast show ${type}`;
+            t.innerHTML = `<span class="material-symbols-rounded">${type==='error'?'error':'check_circle'}</span> ${msg}`;
+            setTimeout(() => t.className = 'toast', 3000);
+        };
+        const populateCountries = (sid) => { const s=$(sid); s.innerHTML=''; COUNTRIES.forEach(c=>{const o=document.createElement('option');o.value=c.code;o.innerText=`${c.flag} ${c.code}`;s.appendChild(o)});};
+        
+        // Session Check
+        window.onload = () => {
+            const stored = localStorage.getItem('vt_user');
+            if(stored) {
+                try { currentUser = JSON.parse(stored); updateUI(); } catch(e){ localStorage.removeItem('vt_user'); }
+            }
+        };
+
+        function updateUI() {
+            $('userDisplay').innerText = currentUser.name;
+            $('userRoleDisplay').innerText = currentUser.role;
+            $('view-login').classList.add('hidden'); $('view-dashboard').classList.remove('hidden'); $('navbar').classList.remove('hidden');
+            initDashboard();
+        }
+
+        async function api(data) {
+            showLoader(true);
+            try {
+                const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(data) });
+                const json = await res.json();
+                showLoader(false); return json;
+            } catch(e) { showLoader(false); showToast("Network Error", "error"); return {status:'error'}; }
+        }
+
+        async function login() {
+            const res = await api({ action: 'login', email: $('loginEmail').value, password: $('loginPass').value });
+            if(res.status === 'success') {
+                currentUser = res.user;
+                localStorage.setItem('vt_user', JSON.stringify(currentUser));
+                updateUI();
+            } else $('loginError').innerText = res.message;
+        }
+        function logout() { localStorage.removeItem('vt_user'); location.reload(); }
+        function openPassModal() { $('modalPass').classList.add('active'); }
+        async function updateOwnPassword() {
+            const o = $('oldPass').value, n = $('newPass').value;
+            if(!o||!n) return showToast("Required", "error");
+            const res = await api({ action: 'changeOwnPassword', email: currentUser.email, oldPassword: o, newPassword: n });
+            res.status==='success' ? (showToast("Updated", "success"), closeModal('modalPass')) : showToast(res.message, "error");
+        }
+
+        async function initDashboard() {
+            const res = await api({ action: 'getDashboard', email: currentUser.email, role: currentUser.role });
+            $('balAnnual').innerText = res.balance.annual - res.balance.annualUsed;
+            $('balInLieu').innerText = res.balance.inLieu - res.balance.inLieuUsed;
+            
+            // History with Global .list-card style for mobile items
+            $('historyTable').querySelector('tbody').innerHTML = res.myRequests.map(r => `
+                <tr class="desktop-row">
+                    <td>${r.type}</td><td>${r.start} - ${r.end}</td><td>${r.days}</td><td><span class="badge ${r.status}">${r.status}</span></td>
+                </tr>
+                <tr class="mobile-row">
+                    <td>
+                        <div class="list-card">
+                            <div class="m-head">
+                                <span class="m-title">${r.type}</span>
+                                <span class="badge ${r.status}">${r.status}</span>
+                            </div>
+                            <div class="m-sub"><span class="material-symbols-rounded" style="font-size:1rem">calendar_today</span> ${r.start} - ${r.end} (${r.days} Days)</div>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+
+            // Pending (Using Global .list-card)
+            if(['Manager','Lead','Admin'].includes(currentUser.role)) {
+                $('reviewSection').classList.remove('hidden');
+                $('pendingList').innerHTML = res.teamRequests.map(r => `
+                    <div class="list-card" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                        <div>
+                            <div class="m-title">${r.email}</div>
+                            <div class="m-sub">${r.type} • ${r.days} Days • ${r.start}</div>
+                        </div>
+                        <div style="display:flex; gap:8px;">
+                            <button class="btn-primary btn-sm" style="background:var(--color-success)" onclick="decide('${r.id}','Approved')">Approve</button>
+                            <button class="btn-danger btn-sm" onclick="decide('${r.id}','Rejected')">Reject</button>
+                        </div>
+                    </div>
+                `).join('') || '<div style="padding:1rem; color:var(--color-slate); text-align:center; background:white; border-radius:12px; border:1px solid #e1e5eb;">No pending requests</div>';
+                
+                $('adminPanel').classList.remove('hidden');
+                if(currentUser.role === 'Admin') $('btnAddUser').classList.remove('hidden');
+                loadUserList();
+            }
+        }
+
+        async function submitRequest(e) { e.preventDefault(); await api({ action: 'submitRequest', email: currentUser.email, start:$('reqStart').value, end:$('reqEnd').value, type:$('reqType').value }); showToast("Submitted", "success"); initDashboard(); }
+        async function decide(id, d) { await api({ action: 'approveReject', id, decision: d }); initDashboard(); }
+
+        async function loadUserList() {
+            const res = await api({ action: 'getUsersList', requestorEmail: currentUser.email, requestorRole: currentUser.role });
+            $('userTable').querySelector('tbody').innerHTML = res.users.map(u => `
+                <tr class="desktop-row">
+                    <td>${u.name}</td><td>${u.email}</td><td>${u.country}</td><td>${u.role}</td>
+                    <td style="text-align:right"><button class="btn-secondary btn-sm" onclick="openManageModal('${u.email}')">Manage</button></td>
+                </tr>
+                <tr class="mobile-row">
+                    <td>
+                        <div class="list-card">
+                            <div class="m-head"><span class="m-title">${u.name}</span><span style="font-size:0.8rem; opacity:0.7">${u.role}</span></div>
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <span class="m-sub">${u.email}</span>
+                                <button class="btn-secondary btn-sm" onclick="openManageModal('${u.email}')">Manage</button>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function openManageModal(email) {
+            populateCountries('mCountry');
+            const res = await api({ action: 'getUserDetails', targetEmail: email });
+            const u = res.user;
+            $('mOrigEmail').value=u.email; $('mEmail').value=u.email; $('mName').value=u.name; $('mManager').value=u.manager; $('mCountry').value=u.country;
+            if(currentUser.role==='Admin') { $('adminFields').classList.remove('hidden'); $('mRole').value=u.role; $('mPass').value=''; } else $('adminFields').classList.add('hidden');
+            $('modalManage').classList.add('active');
+        }
+
+        async function saveUserDetails(e) {
+            e.preventDefault();
+            await api({ action: 'updateUserDetails', requestorRole: currentUser.role, originalEmail: $('mOrigEmail').value, email: $('mEmail').value, name: $('mName').value, manager: $('mManager').value, country: $('mCountry').value, role: $('mRole').value, password: $('mPass').value });
+            showToast("Saved", "success"); closeModal('modalManage'); loadUserList();
+        }
+
+        async function adjustBalance(type) {
+            const amt = type==='Annual'?$('adjAnnAmt').value:$('adjLieuAmt').value;
+            const desc = type==='Annual'?$('adjAnnDesc').value:$('adjLieuDesc').value;
+            const date = type==='InLieu'?$('adjLieuDate').value:'';
+            if(!amt||!desc) return showToast("Details Missing", "error");
+            await api({ action: 'adjustBalance', requestorEmail: currentUser.email, targetEmail: $('mOrigEmail').value, type, amount: amt, description: desc, date });
+            showToast("Updated", "success"); closeModal('modalManage');
+        }
+
+        function openCreateUserModal() { populateCountries('cCountry'); $('modalCreate').classList.add('active'); }
+        async function createUser(e) {
+            e.preventDefault();
+            await api({ action: 'createUser', email:$('cEmail').value, password:$('cPass').value, name:$('cName').value, role:$('cRole').value, manager:$('cManager').value, country:$('cCountry').value });
+            showToast("Created", "success"); closeModal('modalCreate'); loadUserList();
+        }
+    </script>
 </body>
 </html>
