@@ -5,168 +5,483 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vacation Tracker</title>
     
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏖️</text></svg>">
-
+    
     <style>
+        /* ---------------------------------------------------------
+        📦 FONT IMPORTS
+        --------------------------------------------------------- */
+        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0');
+
+        /* ---------------------------------------------------------
+        🎨 COLOR PALETTE & GLOBAL VARIABLES
+        --------------------------------------------------------- */
         :root {
-            --bg-color: #f5f7fa;
-            --primary: #25457B;
-            --primary-hover: #1a325e;
-            --accent: #00B8FF;
-            --surface: #FFFFFF;
-            --text-sec: #607690;
-            --success: #13AA09;
-            --error: #FE4A3F;
-            --shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
-            --border: 1px solid #e0e0e0;
-            --radius: 8px;
-            --font: 'IBM Plex Sans', sans-serif;
+          --color-primary: #25457B;
+          --color-primary-hover: #1b3663;
+          --color-accent: #00B8FF;
+          --color-slate: #607690;
+          --color-white: #FFFFFF;
+          --color-error: #FE4A3F;
+          --color-success: #13AA09;
+          --box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
         }
 
-        * { box-sizing: border-box; }
-        body { font-family: var(--font); background: var(--bg-color); margin: 0; color: #333; display: flex; flex-direction: column; min-height: 100vh; }
-
-        /* Components */
-        .card { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); padding: 24px; margin-bottom: 24px; }
-        .btn { background: var(--primary); color: white; border: none; padding: 10px 18px; border-radius: var(--radius); cursor: pointer; font-weight: 500; font-family: var(--font); display: inline-flex; align-items: center; justify-content: center; gap: 6px; transition: 0.2s; white-space: nowrap; }
-        .btn:hover { background: var(--primary-hover); }
-        .btn.secondary { background: white; border: var(--border); color: var(--text-sec); }
-        .btn.secondary:hover { background: #f8f9fa; }
-        .btn.danger { background: var(--error); }
-        .btn.sm { padding: 6px 12px; font-size: 0.85rem; }
-        
-        input, select { width: 100%; padding: 10px 12px; margin: 6px 0 16px; border: var(--border); border-radius: var(--radius); font-family: var(--font); font-size: 0.95rem; }
-        label { font-size: 0.85rem; font-weight: 600; color: var(--primary); display: block; margin-top: 8px; }
-        
-        /* Layout & Responsive */
-        .container { max-width: 1000px; margin: 2rem auto; padding: 0 1rem; width: 100%; }
-        .navbar { background: var(--surface); border-bottom: 1px solid #eee; padding: 0.8rem 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow); position: sticky; top:0; z-index: 50; }
-        .logo { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 1.2rem; color: var(--primary); }
-        
-        /* Grid Systems */
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; } 
-        /* Removed margin-bottom from stats-grid per request */
-        
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .form-row { display: flex; gap: 10px; align-items: flex-end; }
-        
-        /* Mobile Breakpoint */
-        @media (max-width: 768px) {
-            .navbar { padding: 0.8rem 1rem; flex-direction: column; gap: 10px; }
-            .stats-grid, .grid-2 { grid-template-columns: 1fr; }
-            .form-row { flex-direction: column; align-items: stretch; }
-            .btn { width: 100%; }
-            .mobile-hide { display: none; }
+        /* ---------------------------------------------------------
+        🔄 RESET & BASE STYLES
+        --------------------------------------------------------- */
+        * {
+          box-sizing: border-box;
+          margin: 0;
+          padding: 0;
         }
 
-        /* Specifics */
-        .stat-card { text-align: center; padding: 24px; }
-        .stat-card h3 { color: var(--text-sec); font-size: 0.9rem; margin: 0; }
-        .stat-card .value { color: var(--primary); font-size: 2.2rem; font-weight: 600; margin: 8px 0; }
-        
-        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
-        .section-header h2 { font-size: 1.1rem; color: var(--primary); margin: 0; display: flex; align-items: center; gap: 8px; }
+        body {
+          font-family: 'IBM Plex Sans', sans-serif;
+          font-size: 16px;
+          background: #f5f7fa;
+          color: var(--color-primary);
+        }
 
-        .table-wrap { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 600px; }
-        th { text-align: left; background: #f9f9f9; color: var(--primary); font-size: 0.8rem; padding: 12px; border-bottom: 1px solid #ddd; }
-        td { padding: 12px; border-bottom: 1px solid #eee; color: #444; font-size: 0.9rem; }
-        
-        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
-        .badge.Approved { background: #e6f6e5; color: var(--success); }
-        .badge.Rejected { background: #ffebeb; color: var(--error); }
-        .badge.Pending { background: #e3f2fd; color: var(--primary); }
+        input, button, textarea, select {
+          font-family: inherit;
+        }
 
-        /* Overlays */
-        .overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
-        .overlay.active { display: flex; }
-        .modal { background: white; width: 100%; max-width: 500px; border-radius: var(--radius); padding: 24px; max-height: 90vh; overflow-y: auto; }
-        .modal-header { font-size: 1.1rem; font-weight: 600; color: var(--primary); margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
-        .close-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #999; }
-        
-        .manage-section { background: #f8f9fa; padding: 15px; border-radius: 6px; margin-top: 20px; border: 1px solid #eee; }
-        .manage-section h4 { margin: 0 0 10px 0; color: var(--primary); font-size: 0.9rem; }
-
+        /* Utility */
         .hidden { display: none !important; }
-        .loader { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(255,255,255,0.8); z-index: 2000; display: none; justify-content: center; align-items: center; }
-        .spinner { width: 40px; height: 40px; border: 4px solid #eee; border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* ---------------------------------------------------------
+        🔐 LOGIN PAGE
+        --------------------------------------------------------- */
+        .login-page {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          min-height: 100vh;
+          padding: 2rem;
+        }
+
+        .login-box {
+          width: 100%;
+          max-width: 380px;
+          padding: 2rem;
+          background: var(--color-white);
+          border-radius: 16px;
+          box-shadow: var(--box-shadow);
+          text-align: center;
+        }
+
+        .app-title {
+          font-size: 2rem;
+          margin-bottom: 0.2rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+        }
+
+        .subtitle {
+          font-size: 1rem;
+          color: var(--color-slate);
+          margin-bottom: 1.2rem;
+        }
+
+        /* ---------------------------------------------------------
+        📝 FORM FIELDS
+        --------------------------------------------------------- */
+        .login-form {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .input-group {
+          margin-bottom: 1.5rem;
+          text-align: left;
+        }
+
+        .input-group label {
+          display: block;
+          margin-bottom: 0.4rem;
+          font-size: 1rem;
+          font-weight: 500;
+          color: var(--color-primary);
+        }
+
+        .input-field {
+          display: flex;
+          align-items: center;
+          background: var(--color-white);
+          border: 1px solid #cbd3dc;
+          border-radius: 12px;
+          padding: 0.65rem 1rem;
+          transition: border-color 0.2s;
+        }
         
-        .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #333; color: white; padding: 12px 24px; border-radius: 30px; opacity: 0; transition: 0.3s; z-index: 3000; pointer-events: none; display: flex; gap: 8px; align-items: center; white-space: nowrap; }
+        .input-field:focus-within {
+            border-color: var(--color-accent);
+        }
+
+        .input-field input, .input-field select {
+          flex: 1;
+          border: none;
+          background: transparent;
+          font-size: 1rem;
+          outline: none;
+          color: var(--color-primary);
+          width: 100%;
+        }
+
+        /* ---------------------------------------------------------
+        🔠 ICONS
+        --------------------------------------------------------- */
+        .material-symbols-rounded {
+          font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+          font-size: 1.4rem;
+          margin-right: 0.75rem;
+          color: var(--color-slate);
+          vertical-align: middle;
+        }
+
+        .navbar-title .material-symbols-rounded {
+            color: var(--color-white);
+            margin-right: 0.5rem;
+        }
+
+        /* ---------------------------------------------------------
+        🔘 BUTTONS
+        --------------------------------------------------------- */
+        .btn-primary, .btn-secondary {
+          padding: 0.8rem;
+          border: none;
+          border-radius: 12px;
+          font-size: 1rem;
+          font-weight: 500;
+          cursor: pointer;
+          width: 100%;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          transition: background-color 0.2s;
+        }
+
+        .btn-primary {
+          background-color: var(--color-primary);
+          color: white;
+          margin-bottom: 0.5rem;
+        }
+
+        .btn-primary:hover { background-color: var(--color-primary-hover); }
+
+        .btn-secondary {
+          background-color: transparent;
+          border: 1px solid #cbd3dc;
+          color: var(--color-slate);
+        }
+
+        .btn-secondary:hover { background-color: #f1f4f7; color: var(--color-primary); }
+        
+        .btn-danger { background-color: var(--color-error); color: white; border:none; padding: 0.6rem 1rem; border-radius: 8px; cursor: pointer;}
+        .btn-danger:hover { background-color: #d63d33; }
+        
+        .btn-sm { padding: 0.4rem 0.8rem; font-size: 0.85rem; width: auto; }
+
+        /* ---------------------------------------------------------
+        📢 TOAST NOTIFICATIONS
+        --------------------------------------------------------- */
+        .toast {
+          position: fixed;
+          top: 0;
+          left: 50%;
+          transform: translate(-50%, -100%);
+          background-color: #333;
+          color: white;
+          padding: 1rem 2rem;
+          border-radius: 50px;
+          font-size: 0.95rem;
+          z-index: 3000;
+          opacity: 0;
+          box-shadow: var(--box-shadow);
+          transition: all 0.4s ease-in-out;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+        .toast .material-symbols-rounded { color: white; margin: 0; font-size: 1.2rem; }
+        .toast.show { transform: translate(-50%, 2rem); opacity: 1; }
+        .toast.success { background-color: var(--color-success); }
+        .toast.error { background-color: var(--color-error); }
+
+        /* ---------------------------------------------------------
+        ⏳ LOADER OVERLAY
+        --------------------------------------------------------- */
+        .loader-overlay {
+          position: fixed;
+          inset: 0;
+          background: rgba(255, 255, 255, 0.8);
+          z-index: 2000;
+          display: none;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          backdrop-filter: blur(2px);
+        }
+        .loader {
+          width: 48px;
+          height: 48px;
+          border: 5px solid #e1e5eb;
+          border-top: 5px solid var(--color-accent);
+          border-radius: 50%;
+          animation: rotate 0.8s linear infinite;
+        }
+
+        /* ---------------------------------------------------------
+        📊 DASHBOARD LAYOUT
+        --------------------------------------------------------- */
+        .dashboard { padding: 2rem; max-width: 1200px; margin: auto; }
+        .section-title {
+          font-size: 1.25rem;
+          font-weight: 600;
+          padding-bottom: 0.75rem;
+          margin-bottom: 1.5rem;
+          border-bottom: 1px solid #e1e5eb;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        /* ---------------------------------------------------------
+        📦 SUMMARY CARDS
+        --------------------------------------------------------- */
+        .dashboard-cards { display: flex; flex-wrap: wrap; gap: 1.5rem; margin-bottom: 2rem; }
+        .card {
+          flex: 1 1 200px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          background: var(--color-white);
+          padding: 1.5rem;
+          border-radius: 16px;
+          box-shadow: var(--box-shadow);
+          animation: cardIn 0.5s ease forwards;
+        }
+        .card p { font-size: 0.95rem; color: var(--color-slate); margin-bottom: 0.5rem; }
+        .card .stat-number { font-family: 'IBM Plex Sans', sans-serif; font-weight: 600; font-size: 2.5rem; color: var(--color-primary); }
+        .card:nth-child(1) { animation-delay: 0s; }
+        .card:nth-child(2) { animation-delay: 0.1s; }
+
+        /* ---------------------------------------------------------
+        📋 TABLES
+        --------------------------------------------------------- */
+        .dashboard-table { margin-bottom: 3rem; }
+        .table-wrapper { overflow-x: auto; border-radius: 12px; background: var(--color-white); box-shadow: var(--box-shadow); }
+        .dashboard-table table { width: 100%; min-width: 600px; border-collapse: collapse; }
+        .dashboard-table thead th {
+          background-color: #f8f9fa;
+          color: var(--color-slate);
+          padding: 1rem 1.5rem;
+          font-size: 0.85rem;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          text-align: left;
+          font-weight: 600;
+          border-bottom: 2px solid #e1e5eb;
+        }
+        .dashboard-table tbody td { padding: 1rem 1.5rem; font-size: 0.95rem; border-bottom: 1px solid #f0f0f0; color: var(--color-primary); }
+        .dashboard-table tbody tr:last-child td { border-bottom: none; }
+        
+        /* Status Badges */
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; display: inline-block; }
+        .badge.Approved { background: #e6f6e5; color: var(--color-success); }
+        .badge.Rejected { background: #ffebeb; color: var(--color-error); }
+        .badge.Pending { background: #e3f2fd; color: var(--color-primary); }
+
+        /* ---------------------------------------------------------
+        👤 NAVBAR
+        --------------------------------------------------------- */
+        .navbar { background-color: var(--color-primary); padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
+        .navbar-title { font-size: 1.25rem; font-weight: 600; color: var(--color-white); margin: 0; display: flex; align-items: center; }
+        .user-area { display: flex; align-items: center; gap: 1rem; }
+        .user-info { color: white; font-size: 0.9rem; text-align: right; }
+        .user-info strong { display: block; font-size: 0.95rem; }
+        
+        /* ---------------------------------------------------------
+        📦 MODALS (Added for App Functionality)
+        --------------------------------------------------------- */
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1100; display: none; align-items: center; justify-content: center; padding: 1rem; backdrop-filter: blur(3px); }
+        .overlay.active { display: flex; }
+        .modal { background: var(--color-white); width: 100%; max-width: 500px; padding: 2rem; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; animation: cardIn 0.3s ease; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .modal-header h3 { font-size: 1.25rem; color: var(--color-primary); display: flex; align-items: center; gap: 8px; }
+        .close-btn { background: none; border: none; font-size: 1.5rem; color: var(--color-slate); cursor: pointer; padding: 0; }
+        
+        .modal-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .manage-section { background: #f8f9fa; padding: 1rem; border-radius: 12px; margin-top: 1.5rem; border: 1px solid #e1e5eb; }
+        .manage-section h4 { font-size: 0.9rem; color: var(--color-primary); margin-bottom: 0.8rem; }
+
+        /* ---------------------------------------------------------
+        🎞️ ANIMATIONS
+        --------------------------------------------------------- */
+        @keyframes rotate { 100% { transform: rotate(360deg); } }
+        @keyframes cardIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ---------------------------------------------------------
+        📱 RESPONSIVE LAYOUT (MOBILE)
+        --------------------------------------------------------- */
+        .mobile-view { display: none; }
+        
+        @media (max-width: 768px) {
+            .dashboard { padding: 1rem; }
+            .navbar { padding: 0.8rem 1rem; }
+            .user-info { display: none; } /* Hide name on mobile nav */
+            
+            .dashboard-cards { flex-direction: column; gap: 1rem; }
+            .card { width: 100%; padding: 1rem; flex-direction: row; justify-content: space-between; text-align: left; }
+            .card .stat-number { font-size: 1.8rem; }
+            .card p { margin-bottom: 0; }
+
+            /* Mobile Table logic */
+            .desktop-view { display: none; }
+            .mobile-view { display: block; }
+            
+            .dashboard-table thead { display: none; }
+            .dashboard-table tbody tr { display: block; background: var(--color-white); margin-bottom: 1rem; border-radius: 12px; padding: 1rem; box-shadow: var(--box-shadow); border: 1px solid #e1e5eb; }
+            .dashboard-table tbody td { display: block; padding: 0.25rem 0; border: none; }
+            
+            .mobile-row-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid #f0f0f0; }
+            .mobile-row-header strong { font-size: 1rem; color: var(--color-primary); }
+            .mobile-details { font-size: 0.9rem; color: var(--color-slate); }
+        }
     </style>
 </head>
 <body>
 
-<div id="loader" class="loader"><div class="spinner"></div></div>
-<div id="toast" class="toast"></div>
-
-<nav class="navbar hidden" id="navbar">
-    <div class="logo"><span class="material-symbols-outlined">beach_access</span> Vacation Tracker</div>
-    <div style="display:flex; align-items:center; gap:10px; flex-wrap: wrap;">
-        <button class="btn secondary sm" onclick="openPassModal()"><span class="material-symbols-outlined">lock</span> Password</button>
-        <span id="userDisplay" style="color:var(--text-sec); font-size:0.9rem; font-weight:500;"></span>
-        <button class="btn secondary sm" onclick="logout()">Logout</button>
-    </div>
-</nav>
-
-<div class="container">
-    <div id="view-login" style="display:flex; justify-content:center; align-items:center; min-height:80vh;">
-        <div class="card" style="width:100%; max-width:400px; text-align:center;">
-            <div style="color:var(--primary); margin-bottom:15px;"><span class="material-symbols-outlined" style="font-size:48px;">beach_access</span></div>
-            <h2 style="color:var(--primary); margin-top:0;">Welcome Back</h2>
-            <input type="email" id="loginEmail" placeholder="Email Address">
-            <input type="password" id="loginPass" placeholder="Password">
-            <button class="btn" style="width:100%;" onclick="login()">Sign In</button>
-            <div id="loginError" style="color:var(--error); margin-top:15px; font-size:0.9rem;"></div>
-        </div>
+    <div id="loader" class="loader-overlay">
+        <div class="loader"></div>
+        <p style="margin-top: 1rem; color: var(--color-slate); font-weight: 500;">Processing...</p>
     </div>
 
-    <div id="view-dashboard" class="hidden">
-        
-        <div id="adminPanel" class="card hidden">
-            <div class="section-header">
-                <h2><span class="material-symbols-outlined">supervisor_account</span> User Management</h2>
-                <button id="btnAddUser" class="btn sm hidden" onclick="openCreateUserModal()">+ Add User</button>
+    <div id="toast" class="toast"></div>
+
+    <nav class="navbar hidden" id="navbar">
+        <h1 class="navbar-title">
+            <span class="material-symbols-rounded">beach_access</span>
+            Vacation Tracker
+        </h1>
+        <div class="user-area">
+            <div class="user-info">
+                <strong id="userDisplay">User Name</strong>
+                <span id="userRoleDisplay" style="font-size: 0.8rem; opacity: 0.8;">Member</span>
             </div>
-            <div class="table-wrap">
-                <table id="userTable">
-                    <thead><tr><th>Name</th><th>Email</th><th>Country</th><th>Role</th><th>Action</th></tr></thead>
-                    <tbody></tbody>
-                </table>
-            </div>
+            <button class="btn-secondary btn-sm" onclick="openPassModal()">
+                <span class="material-symbols-rounded" style="margin:0; font-size: 1.2rem;">lock</span>
+            </button>
+            <button class="btn-secondary btn-sm" onclick="logout()">
+                <span class="material-symbols-rounded" style="margin:0; font-size: 1.2rem;">logout</span>
+            </button>
         </div>
+    </nav>
 
-        <div class="stats-grid" style="margin-bottom: 24px;"> <div class="card stat-card"><h3>Annual Remaining</h3><div class="value" id="balAnnual">--</div></div>
-            <div class="card stat-card"><h3>In-Lieu Remaining</h3><div class="value" id="balInLieu">--</div></div>
-        </div>
-
-        <div id="reviewSection" class="card hidden">
-            <div class="section-header"><h2><span class="material-symbols-outlined">notifications_active</span> Pending Requests</h2></div>
-            <div id="pendingList"></div>
-        </div>
-
-        <div class="card">
-            <div class="section-header"><h2><span class="material-symbols-outlined">add_circle</span> New Request</h2></div>
-            <form onsubmit="submitRequest(event)">
-                <div class="grid-2">
-                    <div><label>Start Date</label><input type="date" id="reqStart" required></div>
-                    <div><label>End Date</label><input type="date" id="reqEnd" required></div>
+    <div id="view-login" class="login-page">
+        <div class="login-box">
+            <h2 class="app-title">
+                <span class="material-symbols-rounded" style="font-size: 2.2rem; color: var(--color-primary);">beach_access</span>
+                Vacation Tracker
+            </h2>
+            <p class="subtitle">Sign in to manage your leave</p>
+            
+            <div class="login-form">
+                <div class="input-group">
+                    <label>Email Address</label>
+                    <div class="input-field">
+                        <span class="material-symbols-rounded">mail</span>
+                        <input type="email" id="loginEmail" placeholder="name@company.com">
+                    </div>
                 </div>
-                <label>Type</label>
-                <select id="reqType">
-                    <option value="Annual">Annual Leave</option>
-                    <option value="InLieu">In-Lieu</option>
-                </select>
-                <button type="submit" class="btn">Submit Request</button>
+                <div class="input-group">
+                    <label>Password</label>
+                    <div class="input-field">
+                        <span class="material-symbols-rounded">key</span>
+                        <input type="password" id="loginPass" placeholder="Enter password">
+                    </div>
+                </div>
+                <button class="btn-primary" onclick="login()">Sign In</button>
+                <div id="loginError" style="color:var(--color-error); margin-top:1rem; font-size:0.9rem;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-dashboard" class="dashboard hidden">
+        
+        <div id="adminPanel" class="hidden" style="margin-bottom: 2rem;">
+            <div class="section-title">
+                <span>User Management</span>
+                <button id="btnAddUser" class="btn-primary btn-sm hidden" onclick="openCreateUserModal()">
+                    <span class="material-symbols-rounded" style="font-size: 1.1rem; margin-right: 4px;">add</span> Add User
+                </button>
+            </div>
+            <div class="table-wrapper">
+                <div class="dashboard-table">
+                    <table id="userTable">
+                        <thead><tr><th>Name</th><th>Email</th><th>Country</th><th>Role</th><th style="text-align:right">Action</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-title">My Balance</div>
+        <div class="dashboard-cards">
+            <div class="card">
+                <span class="material-symbols-rounded" style="font-size: 2rem; color: var(--color-accent); margin-bottom: 0.5rem;">calendar_month</span>
+                <p>Annual Remaining</p>
+                <div class="stat-number" id="balAnnual">--</div>
+            </div>
+            <div class="card">
+                <span class="material-symbols-rounded" style="font-size: 2rem; color: var(--color-success); margin-bottom: 0.5rem;">event_available</span>
+                <p>In-Lieu Remaining</p>
+                <div class="stat-number" id="balInLieu">--</div>
+            </div>
+        </div>
+
+        <div id="reviewSection" class="hidden" style="margin-bottom: 2rem;">
+            <div class="section-title">Pending Requests</div>
+            <div id="pendingList" style="display: grid; gap: 1rem;"></div>
+        </div>
+
+        <div class="table-wrapper" style="padding: 1.5rem; margin-bottom: 2rem;">
+            <h3 style="margin-bottom: 1.5rem; color: var(--color-primary); display: flex; align-items: center; gap: 8px;">
+                <span class="material-symbols-rounded">add_circle</span> New Request
+            </h3>
+            <form onsubmit="submitRequest(event)">
+                <div class="modal-grid-2">
+                    <div class="input-group">
+                        <label>Start Date</label>
+                        <div class="input-field"><input type="date" id="reqStart" required></div>
+                    </div>
+                    <div class="input-group">
+                        <label>End Date</label>
+                        <div class="input-field"><input type="date" id="reqEnd" required></div>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Leave Type</label>
+                    <div class="input-field">
+                        <span class="material-symbols-rounded">category</span>
+                        <select id="reqType">
+                            <option value="Annual">Annual Leave</option>
+                            <option value="InLieu">In-Lieu</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary" style="width: auto; padding-left: 2rem; padding-right: 2rem;">Submit Request</button>
             </form>
         </div>
 
-        <div class="card">
-            <div class="section-header"><h2><span class="material-symbols-outlined">history</span> My History</h2></div>
-            <div class="table-wrap">
+        <div class="section-title">My History</div>
+        <div class="table-wrapper">
+            <div class="dashboard-table">
                 <table id="historyTable">
                     <thead><tr><th>Type</th><th>Dates</th><th>Days</th><th>Status</th></tr></thead>
                     <tbody></tbody>
@@ -174,213 +489,341 @@
             </div>
         </div>
     </div>
-</div>
 
-<div id="modalManage" class="overlay">
-    <div class="modal">
-        <div class="modal-header">
-            <span><span class="material-symbols-outlined icon">supervisor_account</span> Manage User</span>
-            <button class="close-btn" onclick="closeModal('modalManage')">&times;</button>
-        </div>
-        <form onsubmit="saveUserDetails(event)">
-            <input type="hidden" id="mOrigEmail">
-            <div class="grid-2">
-                <div><label>Full Name</label><input type="text" id="mName" required></div>
-                <div><label>Country</label><select id="mCountry"></select></div>
+    <div id="modalManage" class="overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3><span class="material-symbols-rounded">manage_accounts</span> Manage User</h3>
+                <button class="close-btn" onclick="closeModal('modalManage')"><span class="material-symbols-rounded">close</span></button>
             </div>
-            <label>Email</label><input type="email" id="mEmail" required>
-            <label>Manager Email</label><input type="email" id="mManager">
-            
-            <div id="adminFields" class="hidden">
-                <div class="grid-2">
-                    <div><label>Role</label><select id="mRole"><option>Member</option><option>Lead</option><option>Manager</option><option>Admin</option></select></div>
-                    <div><label>Reset Password</label><input type="text" id="mPass" placeholder="Optional"></div>
+            <form onsubmit="saveUserDetails(event)">
+                <input type="hidden" id="mOrigEmail">
+                
+                <div class="input-group">
+                    <label>Full Name</label>
+                    <div class="input-field"><input type="text" id="mName" required></div>
                 </div>
-            </div>
-            <button type="submit" class="btn" style="width:100%">Save Details</button>
-        </form>
+                
+                <div class="modal-grid-2">
+                    <div class="input-group">
+                        <label>Email</label>
+                        <div class="input-field"><input type="email" id="mEmail" required></div>
+                    </div>
+                    <div class="input-group">
+                        <label>Country</label>
+                        <div class="input-field"><select id="mCountry"></select></div>
+                    </div>
+                </div>
 
-        <div class="manage-section">
-            <h4>Adjust Annual Leave</h4>
-            <div class="form-row">
-                <div style="flex:1"><input type="number" id="adjAnnAmt" placeholder="+/- Days"></div>
-                <div style="flex:2"><input type="text" id="adjAnnDesc" placeholder="Reason (e.g. Bonus)"></div>
+                <div class="input-group">
+                    <label>Manager Email</label>
+                    <div class="input-field"><input type="email" id="mManager"></div>
+                </div>
+                
+                <div id="adminFields" class="hidden">
+                    <div class="modal-grid-2">
+                        <div class="input-group">
+                            <label>Role</label>
+                            <div class="input-field">
+                                <select id="mRole">
+                                    <option>Member</option>
+                                    <option>Lead</option>
+                                    <option>Manager</option>
+                                    <option>Admin</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label>Reset Password</label>
+                            <div class="input-field"><input type="text" id="mPass" placeholder="Optional"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn-primary">Save User Details</button>
+            </form>
+
+            <div class="manage-section">
+                <h4>Adjust Annual Leave</h4>
+                <div class="modal-grid-2">
+                    <div class="input-field"><input type="number" id="adjAnnAmt" placeholder="+/- Days"></div>
+                    <div class="input-field"><input type="text" id="adjAnnDesc" placeholder="Reason"></div>
+                </div>
+                <button class="btn-secondary btn-sm" style="width:100%; margin-top: 10px;" onclick="adjustBalance('Annual')">Update Annual Balance</button>
             </div>
-            <button class="btn secondary sm" style="width:100%" onclick="adjustBalance('Annual')">Update Annual Balance</button>
+
+            <div class="manage-section">
+                <h4>Add In-Lieu Day</h4>
+                <div class="modal-grid-2">
+                    <div class="input-field"><input type="date" id="adjLieuDate"></div>
+                    <div class="input-field"><input type="number" id="adjLieuAmt" value="1"></div>
+                </div>
+                <div class="input-field" style="margin-top: 10px;"><input type="text" id="adjLieuDesc" placeholder="Description (Required)"></div>
+                <button class="btn-secondary btn-sm" style="width:100%; margin-top: 10px;" onclick="adjustBalance('InLieu')">Add In-Lieu</button>
+            </div>
         </div>
+    </div>
 
-        <div class="manage-section">
-            <h4>Add In-Lieu Day</h4>
-            <div class="grid-2">
-                <div><label>Date (Required)</label><input type="date" id="adjLieuDate"></div>
-                <div><label>Days</label><input type="number" id="adjLieuAmt" value="1"></div>
+    <div id="modalPass" class="overlay">
+        <div class="modal" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3>Change Password</h3>
+                <button class="close-btn" onclick="closeModal('modalPass')"><span class="material-symbols-rounded">close</span></button>
             </div>
-            <label>Description (Required)</label><input type="text" id="adjLieuDesc" placeholder="e.g. Weekend Support">
-            <button class="btn secondary sm" style="width:100%" onclick="adjustBalance('InLieu')">Add In-Lieu</button>
+            <div class="input-group">
+                <label>Current Password</label>
+                <div class="input-field"><input type="password" id="oldPass"></div>
+            </div>
+            <div class="input-group">
+                <label>New Password</label>
+                <div class="input-field"><input type="password" id="newPass"></div>
+            </div>
+            <button class="btn-primary" onclick="updateOwnPassword()">Update Password</button>
         </div>
     </div>
-</div>
 
-<div id="modalPass" class="overlay">
-    <div class="modal">
-        <div class="modal-header"><span>Change Password</span><button class="close-btn" onclick="closeModal('modalPass')">&times;</button></div>
-        <label>Current Password</label><input type="password" id="oldPass">
-        <label>New Password</label><input type="password" id="newPass">
-        <button class="btn" style="width:100%" onclick="updateOwnPassword()">Update Password</button>
-    </div>
-</div>
-
-<div id="modalCreate" class="overlay">
-    <div class="modal">
-        <div class="modal-header"><span>Create User</span><button class="close-btn" onclick="closeModal('modalCreate')">&times;</button></div>
-        <form onsubmit="createUser(event)">
-            <label>Email</label><input type="email" id="cEmail" required>
-            <div class="grid-2">
-                <div><label>Password</label><input type="text" id="cPass" required></div>
-                <div><label>Name</label><input type="text" id="cName" required></div>
+    <div id="modalCreate" class="overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Create User</h3>
+                <button class="close-btn" onclick="closeModal('modalCreate')"><span class="material-symbols-rounded">close</span></button>
             </div>
-            <div class="grid-2">
-                <div><label>Role</label><select id="cRole"><option>Member</option><option>Lead</option><option>Manager</option></select></div>
-                <div><label>Country</label><select id="cCountry"></select></div>
-            </div>
-            <label>Manager Email</label><input type="email" id="cManager">
-            <button type="submit" class="btn" style="width:100%">Create User</button>
-        </form>
+            <form onsubmit="createUser(event)">
+                <div class="input-group">
+                    <label>Email</label>
+                    <div class="input-field"><input type="email" id="cEmail" required></div>
+                </div>
+                <div class="modal-grid-2">
+                    <div class="input-group">
+                        <label>Password</label>
+                        <div class="input-field"><input type="text" id="cPass" required></div>
+                    </div>
+                    <div class="input-group">
+                        <label>Name</label>
+                        <div class="input-field"><input type="text" id="cName" required></div>
+                    </div>
+                </div>
+                <div class="modal-grid-2">
+                    <div class="input-group">
+                        <label>Role</label>
+                        <div class="input-field">
+                            <select id="cRole">
+                                <option>Member</option>
+                                <option>Lead</option>
+                                <option>Manager</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Country</label>
+                        <div class="input-field"><select id="cCountry"></select></div>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Manager Email</label>
+                    <div class="input-field"><input type="email" id="cManager"></div>
+                </div>
+                <button type="submit" class="btn-primary">Create User</button>
+            </form>
+        </div>
     </div>
-</div>
 
-<script>
-    const API_URL = 'https://script.google.com/macros/s/AKfycbyW2TYLJ3gRoMsBWpzaRUwYaGDfFHx6YbDGRvxnt3KrLtOLhwmBN_rIiIYMZH0xwkR7/exec';
-    const COUNTRIES = [
-        {code:'ID', flag:'🇮🇩'}, {code:'PH', flag:'🇵🇭'}, {code:'SG', flag:'🇸🇬'}, 
-        {code:'VN', flag:'🇻🇳'}, {code:'MY', flag:'🇲🇾'}, {code:'TH', flag:'🇹🇭'},
-        {code:'IN', flag:'🇮🇳'}, {code:'US', flag:'🇺🇸'}, {code:'AU', flag:'🇦🇺'}
-    ];
-    let currentUser = null;
-
-    // --- Utils ---
-    const $ = id => document.getElementById(id);
-    const showLoader = s => $('loader').style.display = s ? 'flex' : 'none';
-    const closeModal = id => $(id).classList.remove('active');
-    const showToast = (msg, type='info') => {
-        const t = $('toast'); t.innerHTML = `<span class="material-symbols-outlined">${type==='error'?'error':'check_circle'}</span> ${msg}`;
-        t.style.opacity = 1; setTimeout(() => t.style.opacity = 0, 3000);
-    };
-
-    function populateCountries(selectId) {
-        const sel = $(selectId); sel.innerHTML = '';
-        COUNTRIES.forEach(c => {
-            const opt = document.createElement('option');
-            opt.value = c.code; opt.innerHTML = `${c.flag} ${c.code}`;
-            sel.appendChild(opt);
-        });
-    }
-
-    async function api(data) {
-        showLoader(true);
-        try {
-            const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(data) });
-            const json = await res.json();
-            showLoader(false);
-            return json;
-        } catch(e) { showLoader(false); showToast("Network Error", "error"); return {status:'error'}; }
-    }
-
-    // --- Auth ---
-    async function login() {
-        const res = await api({ action: 'login', email: $('loginEmail').value, password: $('loginPass').value });
-        if(res.status === 'success') {
-            currentUser = res.user;
-            $('userDisplay').innerText = currentUser.name;
-            $('view-login').classList.add('hidden');
-            $('view-dashboard').classList.remove('hidden');
-            $('navbar').classList.remove('hidden');
-            initDashboard();
-        } else $('loginError').innerText = res.message;
-    }
-    function logout() { location.reload(); }
-
-    function openPassModal() { $('modalPass').classList.add('active'); }
-    async function updateOwnPassword() {
-        const o = $('oldPass').value, n = $('newPass').value;
-        if(!o || !n) return showToast("Both fields required", "error");
-        const res = await api({ action: 'changeOwnPassword', email: currentUser.email, oldPassword: o, newPassword: n });
-        if(res.status === 'success') { showToast("Password Changed"); closeModal('modalPass'); }
-        else showToast(res.message, "error");
-    }
-
-    // --- Dashboard ---
-    async function initDashboard() {
-        const res = await api({ action: 'getDashboard', email: currentUser.email, role: currentUser.role });
-        $('balAnnual').innerText = res.balance.annual - res.balance.annualUsed;
-        $('balInLieu').innerText = res.balance.inLieu - res.balance.inLieuUsed;
-        $('historyTable').querySelector('tbody').innerHTML = res.myRequests.map(r => `<tr><td>${r.type}</td><td>${r.start} to ${r.end}</td><td>${r.days}</td><td><span class="badge ${r.status}">${r.status}</span></td></tr>`).join('');
+    <script>
+        const API_URL = 'PASTE_YOUR_WEB_APP_URL_HERE'; // <--- PASTE YOUR URL HERE
         
-        if(['Manager','Lead','Admin'].includes(currentUser.role)) {
-            $('reviewSection').classList.remove('hidden');
-            $('pendingList').innerHTML = res.teamRequests.map(r => `<div style="padding:15px 0; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center;"><div><strong>${r.email}</strong><br><small>${r.type} • ${r.days} Days • ${r.start}</small></div><div><button class="btn success sm" onclick="decide('${r.id}','Approved')">Approve</button> <button class="btn danger sm" onclick="decide('${r.id}','Rejected')">Reject</button></div></div>`).join('') || '<p style="color:#999">No pending requests.</p>';
-            
-            $('adminPanel').classList.remove('hidden');
-            if(currentUser.role === 'Admin') $('btnAddUser').classList.remove('hidden');
-            loadUserList();
+        const COUNTRIES = [
+            {code:'ID', flag:'🇮🇩'}, {code:'PH', flag:'🇵🇭'}, {code:'SG', flag:'🇸🇬'}, 
+            {code:'VN', flag:'🇻🇳'}, {code:'MY', flag:'🇲🇾'}, {code:'TH', flag:'🇹🇭'},
+            {code:'IN', flag:'🇮🇳'}, {code:'US', flag:'🇺🇸'}, {code:'AU', flag:'🇦🇺'}
+        ];
+        let currentUser = null;
+
+        const $ = id => document.getElementById(id);
+        const showLoader = s => $('loader').style.display = s ? 'flex' : 'none';
+        const closeModal = id => $(id).classList.remove('active');
+        
+        const showToast = (msg, type='info') => {
+            const t = $('toast'); 
+            t.className = `toast show ${type}`;
+            t.innerHTML = `<span class="material-symbols-rounded">${type==='error'?'error':'check_circle'}</span> ${msg}`;
+            setTimeout(() => t.className = 'toast', 3000);
+        };
+
+        function populateCountries(selectId) {
+            const sel = $(selectId); sel.innerHTML = '';
+            COUNTRIES.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c.code; opt.innerHTML = `${c.flag} ${c.code}`;
+                sel.appendChild(opt);
+            });
         }
-    }
-    async function submitRequest(e) { e.preventDefault(); await api({ action: 'submitRequest', email: currentUser.email, start:$('reqStart').value, end:$('reqEnd').value, type:$('reqType').value }); showToast("Submitted"); initDashboard(); }
-    async function decide(id, d) { await api({ action: 'approveReject', id, decision: d }); initDashboard(); }
 
-    // --- Admin/Manager ---
-    async function loadUserList() {
-        const res = await api({ action: 'getUsersList', requestorEmail: currentUser.email, requestorRole: currentUser.role });
-        $('userTable').querySelector('tbody').innerHTML = res.users.map(u => `<tr><td>${u.name}</td><td>${u.email}</td><td>${u.country}</td><td>${u.role}</td><td><button class="btn secondary sm" onclick="openManageModal('${u.email}')">Manage</button></td></tr>`).join('');
-    }
+        async function api(data) {
+            showLoader(true);
+            try {
+                const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(data) });
+                const json = await res.json();
+                showLoader(false);
+                return json;
+            } catch(e) { showLoader(false); showToast("Network Error", "error"); return {status:'error'}; }
+        }
 
-    async function openManageModal(email) {
-        populateCountries('mCountry');
-        const res = await api({ action: 'getUserDetails', targetEmail: email });
-        const u = res.user;
-        $('mOrigEmail').value = u.email; $('mEmail').value = u.email; $('mName').value = u.name; $('mManager').value = u.manager; $('mCountry').value = u.country;
-        
-        if(currentUser.role === 'Admin') {
-            $('adminFields').classList.remove('hidden');
-            $('mRole').value = u.role;
-            $('mPass').value = '';
-        } else $('adminFields').classList.add('hidden');
-        
-        $('modalManage').classList.add('active');
-    }
+        // --- Auth ---
+        async function login() {
+            const res = await api({ action: 'login', email: $('loginEmail').value, password: $('loginPass').value });
+            if(res.status === 'success') {
+                currentUser = res.user;
+                $('userDisplay').innerText = currentUser.name;
+                $('userRoleDisplay').innerText = currentUser.role;
+                $('view-login').classList.add('hidden');
+                $('view-dashboard').classList.remove('hidden');
+                $('navbar').classList.remove('hidden');
+                initDashboard();
+            } else $('loginError').innerText = res.message;
+        }
+        function logout() { location.reload(); }
 
-    async function saveUserDetails(e) {
-        e.preventDefault();
-        await api({
-            action: 'updateUserDetails', requestorRole: currentUser.role,
-            originalEmail: $('mOrigEmail').value, email: $('mEmail').value,
-            name: $('mName').value, manager: $('mManager').value, country: $('mCountry').value,
-            role: $('mRole').value, password: $('mPass').value
-        });
-        showToast("Saved"); closeModal('modalManage'); loadUserList();
-    }
+        function openPassModal() { $('modalPass').classList.add('active'); }
+        async function updateOwnPassword() {
+            const o = $('oldPass').value, n = $('newPass').value;
+            if(!o || !n) return showToast("Both fields required", "error");
+            const res = await api({ action: 'changeOwnPassword', email: currentUser.email, oldPassword: o, newPassword: n });
+            if(res.status === 'success') { showToast("Password Changed"); closeModal('modalPass'); }
+            else showToast(res.message, "error");
+        }
 
-    async function adjustBalance(type) {
-        const amt = type === 'Annual' ? $('adjAnnAmt').value : $('adjLieuAmt').value;
-        const desc = type === 'Annual' ? $('adjAnnDesc').value : $('adjLieuDesc').value;
-        const date = type === 'InLieu' ? $('adjLieuDate').value : '';
+        // --- Dashboard ---
+        async function initDashboard() {
+            const res = await api({ action: 'getDashboard', email: currentUser.email, role: currentUser.role });
+            $('balAnnual').innerText = res.balance.annual - res.balance.annualUsed;
+            $('balInLieu').innerText = res.balance.inLieu - res.balance.inLieuUsed;
+            
+            // Build History Table with Desktop/Mobile classes
+            const tbody = $('historyTable').querySelector('tbody');
+            tbody.innerHTML = res.myRequests.map(r => `
+                <tr>
+                    <td class="desktop-view">${r.type}</td>
+                    <td class="desktop-view">${r.start} to ${r.end}</td>
+                    <td class="desktop-view">${r.days}</td>
+                    <td class="desktop-view"><span class="badge ${r.status}">${r.status}</span></td>
+                    
+                    <td class="mobile-view">
+                        <div class="mobile-row-header">
+                            <strong>${r.type}</strong>
+                            <span class="badge ${r.status}">${r.status}</span>
+                        </div>
+                        <div class="mobile-details">
+                            <span class="material-symbols-rounded" style="font-size:1rem; vertical-align:middle">calendar_today</span> 
+                            ${r.start} - ${r.end} (${r.days} Days)
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
 
-        if(!amt || !desc) return showToast("Amount and Description required", "error");
-        if(type === 'InLieu' && !date) return showToast("Date is required for In-Lieu", "error");
+            if(['Manager','Lead','Admin'].includes(currentUser.role)) {
+                $('reviewSection').classList.remove('hidden');
+                $('pendingList').innerHTML = res.teamRequests.map(r => `
+                    <div style="background:white; padding:1.5rem; border-radius:12px; box-shadow:var(--box-shadow); display:flex; justify-content:space-between; align-items:center; border:1px solid #e1e5eb;">
+                        <div>
+                            <strong style="color:var(--color-primary); font-size:1.05rem;">${r.email}</strong><br>
+                            <span style="color:var(--color-slate); font-size:0.9rem;">${r.type} • ${r.days} Days • ${r.start}</span>
+                        </div>
+                        <div style="display:flex; gap:10px;">
+                            <button class="btn-primary btn-sm" style="background-color:var(--color-success)" onclick="decide('${r.id}','Approved')">Approve</button> 
+                            <button class="btn-danger btn-sm" onclick="decide('${r.id}','Rejected')">Reject</button>
+                        </div>
+                    </div>
+                `).join('') || '<div class="card" style="width:100%"><p>No pending requests.</p></div>';
+                
+                $('adminPanel').classList.remove('hidden');
+                if(currentUser.role === 'Admin') $('btnAddUser').classList.remove('hidden');
+                loadUserList();
+            }
+        }
 
-        await api({
-            action: 'adjustBalance', requestorEmail: currentUser.email,
-            targetEmail: $('mOrigEmail').value, type, amount: amt, description: desc, date
-        });
-        showToast("Balance Updated"); closeModal('modalManage');
-    }
+        async function submitRequest(e) { 
+            e.preventDefault(); 
+            await api({ action: 'submitRequest', email: currentUser.email, start:$('reqStart').value, end:$('reqEnd').value, type:$('reqType').value }); 
+            showToast("Request Submitted", "success"); 
+            initDashboard(); 
+        }
+        async function decide(id, d) { await api({ action: 'approveReject', id, decision: d }); initDashboard(); }
 
-    function openCreateUserModal() { populateCountries('cCountry'); $('modalCreate').classList.add('active'); }
-    async function createUser(e) {
-        e.preventDefault();
-        await api({ action: 'createUser', email:$('cEmail').value, password:$('cPass').value, name:$('cName').value, role:$('cRole').value, manager:$('cManager').value, country:$('cCountry').value });
-        showToast("User Created"); closeModal('modalCreate'); loadUserList();
-    }
-</script>
+        // --- Admin/Manager ---
+        async function loadUserList() {
+            const res = await api({ action: 'getUsersList', requestorEmail: currentUser.email, requestorRole: currentUser.role });
+            const tbody = $('userTable').querySelector('tbody');
+            tbody.innerHTML = res.users.map(u => `
+                <tr>
+                    <td class="desktop-view">${u.name}</td>
+                    <td class="desktop-view">${u.email}</td>
+                    <td class="desktop-view">${u.country}</td>
+                    <td class="desktop-view">${u.role}</td>
+                    <td class="desktop-view" style="text-align:right">
+                        <button class="btn-secondary btn-sm" onclick="openManageModal('${u.email}')">Manage</button>
+                    </td>
+
+                    <td class="mobile-view">
+                        <div class="mobile-row-header">
+                            <strong>${u.name}</strong>
+                            <span>${u.role}</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center">
+                            <span style="font-size:0.9rem; color:var(--color-slate)">${u.email}</span>
+                            <button class="btn-secondary btn-sm" onclick="openManageModal('${u.email}')">Manage</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function openManageModal(email) {
+            populateCountries('mCountry');
+            const res = await api({ action: 'getUserDetails', targetEmail: email });
+            const u = res.user;
+            $('mOrigEmail').value = u.email; $('mEmail').value = u.email; $('mName').value = u.name; $('mManager').value = u.manager; $('mCountry').value = u.country;
+            
+            if(currentUser.role === 'Admin') {
+                $('adminFields').classList.remove('hidden');
+                $('mRole').value = u.role;
+                $('mPass').value = '';
+            } else $('adminFields').classList.add('hidden');
+            
+            $('modalManage').classList.add('active');
+        }
+
+        async function saveUserDetails(e) {
+            e.preventDefault();
+            await api({
+                action: 'updateUserDetails', requestorRole: currentUser.role,
+                originalEmail: $('mOrigEmail').value, email: $('mEmail').value,
+                name: $('mName').value, manager: $('mManager').value, country: $('mCountry').value,
+                role: $('mRole').value, password: $('mPass').value
+            });
+            showToast("User details saved", "success"); closeModal('modalManage'); loadUserList();
+        }
+
+        async function adjustBalance(type) {
+            const amt = type === 'Annual' ? $('adjAnnAmt').value : $('adjLieuAmt').value;
+            const desc = type === 'Annual' ? $('adjAnnDesc').value : $('adjLieuDesc').value;
+            const date = type === 'InLieu' ? $('adjLieuDate').value : '';
+
+            if(!amt || !desc) return showToast("Amount and Description required", "error");
+            if(type === 'InLieu' && !date) return showToast("Date is required for In-Lieu", "error");
+
+            await api({
+                action: 'adjustBalance', requestorEmail: currentUser.email,
+                targetEmail: $('mOrigEmail').value, type, amount: amt, description: desc, date
+            });
+            showToast("Balance Updated", "success"); closeModal('modalManage');
+        }
+
+        function openCreateUserModal() { populateCountries('cCountry'); $('modalCreate').classList.add('active'); }
+        async function createUser(e) {
+            e.preventDefault();
+            await api({ action: 'createUser', email:$('cEmail').value, password:$('cPass').value, name:$('cName').value, role:$('cRole').value, manager:$('cManager').value, country:$('cCountry').value });
+            showToast("User Created", "success"); closeModal('modalCreate'); loadUserList();
+        }
+    </script>
 </body>
 </html>
