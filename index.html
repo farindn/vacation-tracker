@@ -96,7 +96,6 @@
           outline: none; color: var(--color-primary); width: 100%;
         }
         
-        /* Icon styles inside inputs */
         .input-field .material-symbols-rounded { font-size: 1.25rem; margin-right: 0.75rem; color: var(--color-slate); }
 
         /* ---------------------------------------------------------
@@ -132,7 +131,7 @@
         .section-title .material-symbols-rounded { color: var(--color-accent); font-size: 1.4rem; }
 
         /* ---------------------------------------------------------
-        📦 CARDS (UPDATED LAYOUT)
+        📦 CARDS
         --------------------------------------------------------- */
         .dashboard-cards { display: flex; gap: 1.5rem; margin-bottom: 2.5rem; }
         
@@ -161,29 +160,9 @@
             border-radius: 50%;
         }
 
-        .card-content {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end; /* Desktop: Text Right */
-            text-align: right;
-        }
-
-        .card-title {
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--color-slate);
-            margin-bottom: 0.25rem;
-            font-weight: 600;
-        }
-
-        .card-value {
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 2rem;
-            font-weight: 600;
-            color: var(--color-primary);
-            line-height: 1;
-        }
+        .card-content { display: flex; flex-direction: column; align-items: flex-end; text-align: right; }
+        .card-title { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-slate); margin-bottom: 0.25rem; font-weight: 600; }
+        .card-value { font-family: 'IBM Plex Mono', monospace; font-size: 2rem; font-weight: 600; color: var(--color-primary); line-height: 1; }
 
         /* ---------------------------------------------------------
         📋 TABLES & WRAPPERS
@@ -195,9 +174,10 @@
             overflow: hidden;
             margin-bottom: 2.5rem;
             border: 1px solid #f0f0f0;
+            width: 100%; /* Ensure full width */
         }
         
-        .form-container { padding: 2rem; } /* Wrapper for New Request Form */
+        .form-container { padding: 2rem; }
 
         table { width: 100%; border-collapse: collapse; min-width: 600px; }
         th {
@@ -262,30 +242,25 @@
         @media (max-width: 768px) {
             .dashboard { padding: 1.5rem 1rem; }
             .navbar { padding: 0.75rem 1rem; }
-            .user-details { display: none; } /* Simplified Nav */
+            .user-details { display: none; }
             
-            /* Typography Refinement */
             .section-title { font-size: 1.05rem; margin-bottom: 1rem; }
             .btn-primary, .btn-secondary { padding: 0.75rem; font-size: 0.9rem; }
             
-            /* Card Layout: Column on Mobile */
+            /* Cards: Column on Mobile */
             .dashboard-cards { flex-direction: row; flex-wrap: wrap; gap: 1rem; }
-            .card {
-                flex-basis: 100%;
-                flex-direction: column; /* Mobile: Column */
-                align-items: center;
-                text-align: center;
-                padding: 1.5rem 1rem;
-            }
+            .card { flex-basis: 100%; flex-direction: column; align-items: center; text-align: center; padding: 1.5rem 1rem; }
             .card-icon { margin-bottom: 1rem; font-size: 2rem; padding: 0.6rem; }
-            .card-content { align-items: center; text-align: center; } /* Mobile: Center Text */
+            .card-content { align-items: center; text-align: center; }
             .card-title { font-size: 0.8rem; }
             .card-value { font-size: 1.8rem; }
 
-            /* Table Cards Logic */
-            .desktop-view { display: none; }
+            /* Hide Desktop Table Headers */
+            .desktop-view { display: none !important; }
             .mobile-view { display: block; }
-            .table-wrapper { background: transparent; box-shadow: none; border: none; margin-bottom: 1.5rem; }
+
+            /* Mobile Rows as Cards */
+            .table-wrapper { background: transparent; box-shadow: none; border: none; margin-bottom: 1.5rem; width: 100%; }
             .dashboard-table-row {
                 background: var(--color-white);
                 border-radius: var(--radius-md);
@@ -293,8 +268,8 @@
                 margin-bottom: 0.75rem;
                 box-shadow: var(--box-shadow);
                 border: 1px solid #e1e5eb;
+                width: 100%;
             }
-            .dashboard-table thead { display: none; }
             
             .m-row-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid #f0f0f0; }
             .m-main-text { font-weight: 600; color: var(--color-primary); font-size: 0.95rem; }
@@ -356,7 +331,7 @@
             </div>
             <div class="table-wrapper">
                 <table id="userTable">
-                    <thead><tr><th>Name</th><th>Email</th><th>Country</th><th>Role</th><th style="text-align:right">Action</th></tr></thead>
+                    <thead class="desktop-view"><tr><th>Name</th><th>Email</th><th>Country</th><th>Role</th><th style="text-align:right">Action</th></tr></thead>
                     <tbody></tbody>
                 </table>
             </div>
@@ -424,7 +399,7 @@
         </div>
         <div class="table-wrapper">
             <table id="historyTable">
-                <thead><tr><th>Type</th><th>Dates</th><th>Days</th><th>Status</th></tr></thead>
+                <thead class="desktop-view"><tr><th>Type</th><th>Dates</th><th>Days</th><th>Status</th></tr></thead>
                 <tbody></tbody>
             </table>
         </div>
@@ -459,23 +434,28 @@
                     <div class="input-field"><input type="number" id="adjAnnAmt" placeholder="+/- Days"></div>
                     <div class="input-field"><input type="text" id="adjAnnDesc" placeholder="Reason"></div>
                 </div>
-                <button class="btn-secondary btn-sm" style="width:100%; margin-top:10px" onclick="adjustBalance('Annual')">Update</button>
+                <button class="btn-primary btn-sm" style="width:100%; margin-top:10px" onclick="adjustBalance('Annual')">Update</button>
             </div>
+            
             <div class="manage-box">
                 <h4>Add In-Lieu Day</h4>
                 <div class="grid-2">
                     <div class="input-field"><input type="date" id="adjLieuDate"></div>
-                    <div class="input-field"><input type="number" id="adjLieuAmt" value="1"></div>
+                    
+                    <div style="display:flex; align-items:center; background:white; border:1px solid #cbd3dc; border-radius:12px; padding:0 1rem; color:var(--color-primary); font-weight:600;">
+                        1 Day
+                        <input type="hidden" id="adjLieuAmt" value="1">
+                    </div>
                 </div>
                 <div class="input-field" style="margin-top:10px"><input type="text" id="adjLieuDesc" placeholder="Description (Required)"></div>
-                <button class="btn-secondary btn-sm" style="width:100%; margin-top:10px" onclick="adjustBalance('InLieu')">Add In-Lieu</button>
+                <button class="btn-primary btn-sm" style="width:100%; margin-top:10px" onclick="adjustBalance('InLieu')">Add In-Lieu</button>
             </div>
         </div>
     </div>
 
     <div id="modalPass" class="overlay">
         <div class="modal">
-            <div class="modal-header"><h3>Change Password</h3><button class="close-icon" onclick="closeModal('modalPass')"><span class="material-symbols-rounded">close</span></button></div>
+            <div class="modal-header"><h3><span class="material-symbols-rounded">lock_reset</span> Change Password</h3><button class="close-icon" onclick="closeModal('modalPass')"><span class="material-symbols-rounded">close</span></button></div>
             <div class="input-group"><label>Current Password</label><div class="input-field"><input type="password" id="oldPass"></div></div>
             <div class="input-group"><label>New Password</label><div class="input-field"><input type="password" id="newPass"></div></div>
             <button class="btn-primary" onclick="updateOwnPassword()">Update</button>
@@ -484,7 +464,7 @@
 
     <div id="modalCreate" class="overlay">
         <div class="modal">
-            <div class="modal-header"><h3>Create User</h3><button class="close-icon" onclick="closeModal('modalCreate')"><span class="material-symbols-rounded">close</span></button></div>
+            <div class="modal-header"><h3><span class="material-symbols-rounded">person_add</span> Create User</h3><button class="close-icon" onclick="closeModal('modalCreate')"><span class="material-symbols-rounded">close</span></button></div>
             <form onsubmit="createUser(event)">
                 <div class="input-group"><label>Email</label><div class="input-field"><input type="email" id="cEmail" required></div></div>
                 <div class="grid-2">
