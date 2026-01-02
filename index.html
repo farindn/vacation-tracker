@@ -66,6 +66,17 @@
         .card-title { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-slate); margin-bottom: 0.25rem; font-weight: 600; }
         .card-value { font-family: 'IBM Plex Mono', monospace; font-size: 2rem; font-weight: 600; color: var(--color-primary); line-height: 1; }
 
+        /* List/Table Cards (Global Style for consistency) */
+        .list-card {
+            background: var(--color-white);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            box-shadow: var(--box-shadow);
+            border: 1px solid #e1e5eb;
+            width: 100%;
+        }
+
         /* Tables & Wrappers */
         .table-wrapper { background: var(--color-white); border-radius: var(--radius-lg); box-shadow: var(--box-shadow); overflow: hidden; margin-bottom: 2.5rem; border: 1px solid #f0f0f0; width: 100%; }
         .form-container { padding: 2rem; }
@@ -109,6 +120,11 @@
         .manage-box { background: #f8f9fa; padding: 1rem; border-radius: var(--radius-md); margin-top: 1rem; border: 1px solid #e1e5eb; }
         .manage-box h4 { font-size: 0.85rem; color: var(--color-primary); margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; }
 
+        /* Common row content styles */
+        .m-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid #f0f0f0; }
+        .m-title { font-weight: 600; color: var(--color-primary); font-size: 0.95rem; }
+        .m-sub { font-size: 0.85rem; color: var(--color-slate); display: flex; align-items: center; gap: 4px; }
+
         /* --- MOBILE STYLES --- */
         .mobile-row { display: none; } /* Hidden on desktop */
         
@@ -136,20 +152,6 @@
             .desktop-row { display: none; } /* Hide Desktop Rows */
             .mobile-row { display: block; width: 100%; margin-bottom: 1rem; }
             .mobile-row td { display: block; padding: 0; border: none; background: transparent; }
-
-            /* The Mobile Card Style */
-            .mobile-card {
-                background: var(--color-white);
-                border-radius: var(--radius-md);
-                padding: 1rem;
-                box-shadow: var(--box-shadow);
-                border: 1px solid #e1e5eb;
-                width: 100%;
-            }
-
-            .m-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid #f0f0f0; }
-            .m-title { font-weight: 600; color: var(--color-primary); font-size: 0.95rem; }
-            .m-sub { font-size: 0.85rem; color: var(--color-slate); display: flex; align-items: center; gap: 4px; }
             
             .form-container { padding: 1.25rem; }
         }
@@ -171,9 +173,8 @@
 
     <div id="view-login" class="login-page">
         <div class="login-box">
-            <h2 class="app-title"><span class="material-symbols-rounded" style="font-size:2rem;">beach_access</span></h2>
-            <h2 class="app-title">Vacation Tracker</h2>
-            <p class="subtitle">Manage your vacation</p>
+            <h2 class="app-title"><span class="material-symbols-rounded" style="font-size:2rem;">beach_access</span> Vacation Tracker</h2>
+            <p class="subtitle">Sign in to manage your leave</p>
             <div class="input-group"><label>Email</label><div class="input-field"><span class="material-symbols-rounded">mail</span><input type="email" id="loginEmail" placeholder="name@company.com"></div></div>
             <div class="input-group"><label>Password</label><div class="input-field"><span class="material-symbols-rounded">key</span><input type="password" id="loginPass" placeholder="Password"></div></div>
             <button class="btn-primary" onclick="login()">Sign In</button>
@@ -322,6 +323,21 @@
         };
         const populateCountries = (sid) => { const s=$(sid); s.innerHTML=''; COUNTRIES.forEach(c=>{const o=document.createElement('option');o.value=c.code;o.innerText=`${c.flag} ${c.code}`;s.appendChild(o)});};
         
+        // Session Check
+        window.onload = () => {
+            const stored = localStorage.getItem('vt_user');
+            if(stored) {
+                try { currentUser = JSON.parse(stored); updateUI(); } catch(e){ localStorage.removeItem('vt_user'); }
+            }
+        };
+
+        function updateUI() {
+            $('userDisplay').innerText = currentUser.name;
+            $('userRoleDisplay').innerText = currentUser.role;
+            $('view-login').classList.add('hidden'); $('view-dashboard').classList.remove('hidden'); $('navbar').classList.remove('hidden');
+            initDashboard();
+        }
+
         async function api(data) {
             showLoader(true);
             try {
@@ -335,13 +351,11 @@
             const res = await api({ action: 'login', email: $('loginEmail').value, password: $('loginPass').value });
             if(res.status === 'success') {
                 currentUser = res.user;
-                $('userDisplay').innerText = currentUser.name.split(' ')[0];
-                $('userRoleDisplay').innerText = currentUser.role;
-                $('view-login').classList.add('hidden'); $('view-dashboard').classList.remove('hidden'); $('navbar').classList.remove('hidden');
-                initDashboard();
+                localStorage.setItem('vt_user', JSON.stringify(currentUser));
+                updateUI();
             } else $('loginError').innerText = res.message;
         }
-        function logout() { location.reload(); }
+        function logout() { localStorage.removeItem('vt_user'); location.reload(); }
         function openPassModal() { $('modalPass').classList.add('active'); }
         async function updateOwnPassword() {
             const o = $('oldPass').value, n = $('newPass').value;
@@ -355,14 +369,14 @@
             $('balAnnual').innerText = res.balance.annual - res.balance.annualUsed;
             $('balInLieu').innerText = res.balance.inLieu - res.balance.inLieuUsed;
             
-            // History with Mobile Row logic (Fixed <tbody><div> issue)
+            // History with Global .list-card style for mobile items
             $('historyTable').querySelector('tbody').innerHTML = res.myRequests.map(r => `
                 <tr class="desktop-row">
                     <td>${r.type}</td><td>${r.start} - ${r.end}</td><td>${r.days}</td><td><span class="badge ${r.status}">${r.status}</span></td>
                 </tr>
                 <tr class="mobile-row">
                     <td>
-                        <div class="mobile-card">
+                        <div class="list-card">
                             <div class="m-head">
                                 <span class="m-title">${r.type}</span>
                                 <span class="badge ${r.status}">${r.status}</span>
@@ -373,11 +387,11 @@
                 </tr>
             `).join('');
 
-            // Pending
+            // Pending (Using Global .list-card)
             if(['Manager','Lead','Admin'].includes(currentUser.role)) {
                 $('reviewSection').classList.remove('hidden');
                 $('pendingList').innerHTML = res.teamRequests.map(r => `
-                    <div class="mobile-card" style="margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                    <div class="list-card" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
                         <div>
                             <div class="m-title">${r.email}</div>
                             <div class="m-sub">${r.type} • ${r.days} Days • ${r.start}</div>
@@ -387,7 +401,7 @@
                             <button class="btn-danger btn-sm" onclick="decide('${r.id}','Rejected')">Reject</button>
                         </div>
                     </div>
-                `).join('') || '<div style="padding:1rem; color:var(--color-slate); text-align:center; background:white; border-radius:12px;">No pending requests</div>';
+                `).join('') || '<div style="padding:1rem; color:var(--color-slate); text-align:center; background:white; border-radius:12px; border:1px solid #e1e5eb;">No pending requests</div>';
                 
                 $('adminPanel').classList.remove('hidden');
                 if(currentUser.role === 'Admin') $('btnAddUser').classList.remove('hidden');
@@ -407,7 +421,7 @@
                 </tr>
                 <tr class="mobile-row">
                     <td>
-                        <div class="mobile-card">
+                        <div class="list-card">
                             <div class="m-head"><span class="m-title">${u.name}</span><span style="font-size:0.8rem; opacity:0.7">${u.role}</span></div>
                             <div style="display:flex; justify-content:space-between; align-items:center;">
                                 <span class="m-sub">${u.email}</span>
